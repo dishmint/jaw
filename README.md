@@ -56,5 +56,5 @@ FUNC [V1] [V2] :
 ```
 
 ## ROADMAP
-[ ] - Conditionals
-[ ] - Parallel Operations
+- [ ] Conditionals
+- [ ] Parallel Operations

@@ -1,6 +1,6 @@
 # JAW
 
-**JAW** (_just all words_) is a pseudocode language.
+**JAW** (_just a word_) is a pseudocode language.
 
 ## Grammar
 

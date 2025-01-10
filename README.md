@@ -57,4 +57,5 @@ FUNC [V1] [V2] :
 
 ## ROADMAP
 - [ ] Conditionals
+- [ ] Loops
 - [ ] Parallel Operations

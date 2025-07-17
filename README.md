@@ -24,7 +24,7 @@ TEXT          => PLAINTEXT
 
 ## Examples
 
-```js
+```
 [V1] — The first variable
 [V2] — The second variable
 
@@ -35,7 +35,7 @@ FUNC [V1] [V2] :
 	[>] [3]
 ```
 
-```js
+```
 [V1] — The first variable
 [V2] — The second variable
 
@@ -45,7 +45,7 @@ FUNC [V1] [V2] :
 	[>] [1] + [2]
 ```
 
-```js
+```
 [V1] — The first variable
 [V2] — The second variable
 

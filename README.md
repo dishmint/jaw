@@ -1,6 +1,6 @@
 # JAW
 
-**JAW** (_just a word_) is a pseudocode language.
+**JAW** (_just a word_) is a pseudocode and commenting language.
 
 ## Dictionary
 ### Variables
@@ -23,7 +23,7 @@
 #### one-line header
 ```
 /<function-identifier> [<argument-identifier>]: <argument-description>, ...
-add [A]: an integer, [B]: an integer
+/add [A]: an integer, [B]: an integer
 ```
 
 #### two-line header
@@ -59,7 +59,7 @@ add [A]: an integer, [B]: an integer
 
 ```
 [*] <general-comment>
-[*] hey this code is pretty cool, or mayb I'll build a jungle gym tomorrow, whodafuq nose!!
+[*] hey this code is pretty cool, or maybe I'll build a jungle gym tomorrow, whodafuq nose!!
 ```
 
 #### Conditionals

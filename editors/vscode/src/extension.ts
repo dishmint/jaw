@@ -1,4 +1,11 @@
 import { ExtensionContext, workspace } from "vscode";
+import {
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+} from "vscode-languageclient/node";
+
+let client: LanguageClient | undefined;
 
 const JAW_BOLD_SCOPES = [
   { scope: "variable.other.jaw", settings: { fontStyle: "bold" } },
@@ -13,7 +20,6 @@ async function ensureBoldStyles() {
   const current = config.get<any>("tokenColorCustomizations") || {};
   const existingRules: any[] = current.textMateRules || [];
 
-  // Check if our rules are already present
   const existingScopes = new Set(existingRules.map((r: any) => r.scope));
   const missing = JAW_BOLD_SCOPES.filter((r) => !existingScopes.has(r.scope));
 
@@ -25,13 +31,39 @@ async function ensureBoldStyles() {
     await config.update(
       "tokenColorCustomizations",
       updated,
-      true // global (user) settings
+      true
     );
   }
 }
 
 export function activate(context: ExtensionContext) {
   ensureBoldStyles();
+
+  const config = workspace.getConfiguration("jaw");
+  const serverPath = config.get<string>("server.path") || "jaw-lsp";
+
+  const serverOptions: ServerOptions = {
+    run: { command: serverPath },
+    debug: { command: serverPath },
+  };
+
+  const clientOptions: LanguageClientOptions = {
+    documentSelector: [{ scheme: "file", language: "jaw" }],
+  };
+
+  client = new LanguageClient(
+    "jaw-lsp",
+    "JAW Language Server",
+    serverOptions,
+    clientOptions
+  );
+
+  client.start();
 }
 
-export function deactivate(): void {}
+export function deactivate(): Thenable<void> | undefined {
+  if (client) {
+    return client.stop();
+  }
+  return undefined;
+}

@@ -1,0 +1,21 @@
+[*] Test: bare function refs inside conditionals
+
+/Grant [R]: a role
+	[!] — access granted for [R]
+
+/Deny [R]: a role
+	[!] — access denied for [R]
+
+/Limit [R]: a role
+	[!] — limited access for [R]
+
+/CheckAccess
+[R]: a role
+	[1] — [R] == Admin ? Grant[ [R] ] | Deny[ [R] ]
+	[^] WARNING: bare refs to Grant and Deny
+
+	[2] — [R] == Admin ? /Grant[ [R] ] | /Deny[ [R] ]
+	[^] OK: proper refs — no warnings
+
+	[3] — [R] == Admin ? /Grant[ [R] ] | [R] == User ? Limit[ [R] ] | /Deny[ [R] ]
+	[^] WARNING: bare ref to Limit only

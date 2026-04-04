@@ -152,18 +152,26 @@ When branches require multiple steps, use `[+]` and `[-]` blocks:
 
 ### Decorators
 
-`#name` or `#name:value` annotations attach metadata to variables, steps, or functions. (`@` is reserved for array access.)
+`#name` or `#name:value` annotations attach metadata to variables, steps, or functions.
 
 ```
 [V] — a vector #mutable #type:list
 [1] — sort [V] #complexity:O(nlogn)
 
-/add
+/add #pure
 [A]: an integer, [B]: an integer
-[>] [A] + [B] #pure
+[>] [A] + [B]
 ```
 
-Decorators are flexible — the user decides what to annotate.
+Function-level decorators go on the `/name` line. Decorators are flexible — the user decides what to annotate.
+
+### Array Access
+
+`@` is used for accessing elements in a collection by index:
+```
+[V]@[P]
+[^] element at position P in V
+```
 
 ### Operators
 
@@ -231,4 +239,4 @@ FUNC {1 2 3} {3 2 1} => {4 4 4}
 
 ## Issues
 
-One of the pain points in developing an explicit pseudocode language is determining how much of the PSC should be defined up front, and how much is at the user's discretion. JAW is flexible enough that plain text can be used in place of exact syntax. Meaning, one could write in natural language what a certain step should perform, or which function should be called with what arguments.
+One of the pain points in developing an explicit pseudocode language is determining how much of the syntax should be defined up front, and how much is at the user's discretion. JAW is flexible enough that plain text can be used in place of exact syntax. Meaning, one could write in natural language what a certain step should perform, or which function should be called with what arguments.

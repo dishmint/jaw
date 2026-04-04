@@ -2,6 +2,8 @@
 
 **JAW** (_just a word_) is a pseudocode and commenting language.
 
+*Spec first — Implement later*
+
 <img src="docs/images/example.png" alt="JAW Example" width="600">
 
 ## Syntax

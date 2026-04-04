@@ -64,6 +64,8 @@
 
 #### Conditionals
 To be frank, I don't like any of these. Something needs refinement. Ask what the problem is (and then what sub-problem needs solving in order to resolve it), that might clarify what's needed.
+
+Conditionals are encounters. A condition is encountered that alters how the algorithm continues.
 ##### If/Else
 ```
 [?] — <condition>
@@ -101,26 +103,6 @@ To be frank, I don't like any of these. Something needs refinement. Ask what the
 [>] 42
 ```
 
-## Grammar
-<!-- TODO: Grammar needs updating -->
-```js
-SOURCE        => REPEAT( TEXT | VARIABLE | INFIX | POSTFIX | PREFIX | FUNCTION | CODEBLOCK )
-CODE          => REPEAT( TEXT )
-INFIX         => [ ~ IDENTIFIER ~ ] — TEXT  
-POSTFIX       => [ ~ IDENTIFIER   ] — TEXT  
-PREFIX        => [   IDENTIFIER ~ ] — TEXT  
-FUNCTION      => IDENTIFIER — REPEAT( VARIABLE ) : NEWLINE CODEBLOCK
-VARIABLE      => [ IDENTIFIER ] — TEXT 
-CODEBLOCK     => REPEAT( INDENT [ NUMBER ] — STEP NEWLINE )
-STEP          => STATMENT | RETURN | COMMENT
-STATEMENT     => [ NUMBER ] — CODE
-RETURN        => [ > ] CODE
-COMMENT       => [ ^ ] TEXT
-/* [^] custom operators */
-IDENTIFIER    => A-Z 0-9
-TEXT          => PLAINTEXT
-```
-
 ## Examples
 
 ```
@@ -139,4 +121,8 @@ FUNC {1 2 3} {3 2 1} => {4 4 4}
 ```
 
 ## TODOs
-- [ ] TODO: Parallel Operations or sibling statements
+- [ ] TODO: Parallel Operations
+- [ ] TODO: variable or statement decorators (annotating with additional information)
+
+## Issues
+One of the pain points in developing an explicit pseudocode language is determining how much of the PSC should be defined up front, and how much is at the user's discretion. JAW is flexible enough that plain text can be used in place of extact syntax. Meaning, one could write in natural language what a certain step should perform, or which function shouldbe called with what arguments.

@@ -5,6 +5,7 @@ const JAW_BOLD_SCOPES = [
   { scope: "variable.other.definition.jaw", settings: { fontStyle: "bold" } },
   { scope: "constant.numeric.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "punctuation.definition.step.jaw", settings: { fontStyle: "bold" } },
+  { scope: "markup.italic.log-title.jaw", settings: { fontStyle: "italic" } },
 ];
 
 async function ensureBoldStyles() {

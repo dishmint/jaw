@@ -1,0 +1,7 @@
+[----------------------------------------------------------------]
+[V] — a vector #mutable #type:list
+[1] — sort [V] #complexity:O(nlogn)
+
+/add #pure
+[A]: an integer, [B]: an integer
+[>] [A] + [B]

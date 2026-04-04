@@ -49,7 +49,7 @@ impl Parser {
             Some(TokenKind::LBracket) => {
                 // Peek inside the bracket to determine what this is
                 match self.peek_bracket_content() {
-                    BracketContent::Identifier(_) => {
+                    BracketContent::Identifier => {
                         // Could be variable declaration or inline assignment
                         // Check what follows the ]
                         if self.is_inline_assignment() {
@@ -59,7 +59,7 @@ impl Parser {
                             self.parse_variable_decl().map(TopLevel::Variable)
                         }
                     }
-                    BracketContent::Number(_) => {
+                    BracketContent::Number => {
                         // Step at top level — unusual but valid
                         self.skip_to_newline();
                         None
@@ -328,13 +328,13 @@ impl Parser {
             match self.peek_kind() {
                 Some(TokenKind::LBracket) => {
                     match self.peek_bracket_content() {
-                        BracketContent::Number(_) => {
+                        BracketContent::Number => {
                             // Could be step or complex conditional
                             if let Some(item) = self.parse_step_or_complex_cond(block_indent) {
                                 items.push(item);
                             }
                         }
-                        BracketContent::Identifier(_) => {
+                        BracketContent::Identifier => {
                             // Inline assignment inside block
                             if let Some(assign) = self.parse_block_inline_assign() {
                                 items.push(BlockItem::InlineAssign(assign));
@@ -809,15 +809,8 @@ impl Parser {
             return BracketContent::Other;
         }
         match &self.tokens[self.pos + 1].kind {
-            TokenKind::Identifier(_) => {
-                let name = if let TokenKind::Identifier(s) = &self.tokens[self.pos + 1].kind {
-                    s.clone()
-                } else {
-                    String::new()
-                };
-                BracketContent::Identifier(name)
-            }
-            TokenKind::Number(n) => BracketContent::Number(*n),
+            TokenKind::Identifier(_) => BracketContent::Identifier,
+            TokenKind::Number(_) => BracketContent::Number,
             TokenKind::Tilde => BracketContent::Tilde,
             TokenKind::Ampersand => BracketContent::Ampersand,
             TokenKind::Caret => BracketContent::Caret,
@@ -1039,8 +1032,8 @@ impl Parser {
 
 #[derive(Debug, Clone)]
 enum BracketContent {
-    Identifier(String),
-    Number(u32),
+    Identifier,
+    Number,
     Tilde,
     Ampersand,
     Caret,

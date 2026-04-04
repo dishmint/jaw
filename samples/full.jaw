@@ -1,0 +1,50 @@
+[V] — a vector #mutable #type:list
+[M] — a matrix
+[R] — accumulated results
+
+[*] This is a comprehensive example
+demonstrating all JAW constructs
+in a single file
+
+/process #pure
+[V]: a list, [M]: a matrix
+	[1] — [L]: length of [V]
+	[^] upper bound for iteration
+	[2] — [P]: tracking position = 0
+
+	[~] — [P] < [L]
+		[1] — [V]@[P] > 0 ? /HandlePositive | /HandleNegative
+		[^] branch on sign
+		[2] — [P] += 1
+
+	[&]
+		[1] — Fetch data from API
+		[2] — Load cache from disk
+	[3] — Process results
+	[^] step 3 waits for parallel block
+
+	[>] [R] #validated
+
+/HandlePositive
+	[!] —
+		processing positive value
+		[V]@[P] added to [R]
+	[1] — [R] << [V]@[P]
+
+/HandleNegative
+	[!] — #warn skipping negative value at [P]
+	[1] — pass
+
+[*] The /process function calls /HandlePositive and /HandleNegative
+internally, branching on whether [V]@[P] is positive or negative.
+[R] accumulates results across iterations.
+
+/main
+[V]: a list, [M]: a matrix
+	[1] — /process[ [V], [M] ]
+	[^] call /process with [V] and [M]
+	[!] — result: [R]
+	[^] log the value of [R]
+	[2] — validate[ [R] ]
+	[^] [R] is passed to another function for validation
+	[>] [2]

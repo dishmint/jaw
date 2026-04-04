@@ -1,0 +1,65 @@
+{
+  "name": "jaw-language",
+  "displayName": "JAW Language",
+  "description": "Syntax highlighting and language server for JAW (Just A Word) pseudocode language",
+  "version": "0.1.0",
+  "publisher": "dishmint",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dishmint/jaw"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Programming Languages"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:jaw"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "jaw",
+        "aliases": ["JAW", "jaw"],
+        "extensions": [".jaw"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jaw",
+        "scopeName": "source.jaw",
+        "path": "./syntaxes/jaw.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.jaw.codeblock",
+        "path": "./syntaxes/jaw-markdown-injection.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": {
+          "meta.embedded.block.jaw": "jaw"
+        }
+      }
+    ],
+    "configuration": {
+      "title": "JAW",
+      "properties": {
+        "jaw.server.path": {
+          "type": "string",
+          "default": "jaw-lsp",
+          "description": "Path to the jaw-lsp binary"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -watch -p ."
+  }
+}

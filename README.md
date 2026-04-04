@@ -96,12 +96,12 @@ and keeps going until the next construct
 
 #### Simple (one-liner)
 ```
-[1] — [A] > [B] ? DoX | DoY
+[1] — [A] > [B] ? /DoX | /DoY
 ```
 
 #### Chained (else-if)
 ```
-[1] — [A] > [B] ? DoX | [A] == [B] ? DoY | DoZ
+[1] — [A] > [B] ? /DoX | [A] == [B] ? /DoY | /DoZ
 [^] if A>B do X, else if A==B do Y, else do Z
 ```
 
@@ -109,8 +109,8 @@ and keeps going until the next construct
 When branches require multiple steps, use `[+]` and `[-]` blocks:
 ```
 [1] — [A] > [B] ?
-	[+] — DoX
-	[-] — DoY
+	[+] — /DoX
+	[-] — /DoY
 ```
 
 ### Loops
@@ -212,7 +212,7 @@ FUNC {1 2 3} {3 2 1} => {4 4 4}
 	[2] — [P]: tracking position = 0
 	[^] allows us to move along [V]
 	[~] — [P] < [L]
-		[!] — `[V][ [P] ]` @ v[`[P]`]
+		[!] — [V]@[P] at index [P]
 		[^] the [!] above means log or print
 		[1] — [P] += 1
 		[^] advance position for the next iteration
@@ -228,13 +228,13 @@ FUNC {1 2 3} {3 2 1} => {4 4 4}
 	[2] — [P]: tracking position = 0
 	[^] allows us to move along [V]
 	[~] — [P] < [L]
-		[1] — [V]@[P] > 0 ? LogState | Pass
+		[1] — [V]@[P] > 0 ? /LogState | /Pass
 		[^] log if positive, otherwise continue
 		[2] — [P] += 1
 		[^] advance tracking position
 
 /LogState
-	[!] — `[V][ [P] ]` @ v[`[P]`]
+	[!] — [V]@[P] at index [P]
 ```
 
 ## Issues

@@ -15,8 +15,11 @@
 
 #### Inline Assignment
 ```
+[<identifier>]: description
 [<identifier>]: description = value
 
+[L]: length of [V]
+[R]: result
 [L]: length of [V] = 0
 [Y]: a color = Red
 ```

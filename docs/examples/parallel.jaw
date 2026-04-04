@@ -1,0 +1,6 @@
+[----------------------------------------------------------------]
+[&]
+	[1] — Fetch data from API
+	[2] — Load cache from disk
+[2] — Process results
+[^] step 2 waits for [&] to complete

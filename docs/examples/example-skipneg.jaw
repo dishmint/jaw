@@ -1,0 +1,17 @@
+[----------------------------------------------------------------]
+[V] — a vector
+
+/obverse_skipnegative
+[V]: a list
+	[1] — [L]: length of [V]
+	[^] gives us an upper bound
+	[2] — [P]: tracking position = 0
+	[^] allows us to move along [V]
+	[~] — [P] < [L]
+		[1] — [V]@[P] > 0 ? /LogState | /Pass
+		[^] log if positive, otherwise continue
+		[2] — [P] += 1
+		[^] advance tracking position
+
+/LogState
+	[!] — [V]@[P] at index [P]

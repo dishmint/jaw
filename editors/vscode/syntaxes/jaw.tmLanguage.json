@@ -12,7 +12,9 @@
     { "include": "#complex-cond-true" },
     { "include": "#complex-cond-false" },
     { "include": "#function-definition" },
+    { "include": "#variable-access" },
     { "include": "#variable-declaration" },
+    { "include": "#inline-assignment-with-value" },
     { "include": "#inline-assignment" },
     { "include": "#step" },
     { "include": "#decorator" },
@@ -52,10 +54,19 @@
       "name": "entity.name.function.jaw"
     },
     "log": {
-      "begin": "^(\\s*)(\\[!\\])(\\s*—\\s*)",
+      "begin": "^(\\s*)(\\[!\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
       "beginCaptures": {
         "2": { "name": "keyword.other.log.jaw" },
-        "3": { "name": "punctuation.separator.jaw" }
+        "3": { "name": "punctuation.separator.jaw" },
+        "4": { "name": "markup.italic.log-title.jaw" },
+        "5": { "name": "entity.other.attribute-name.decorator.jaw" },
+        "6": {
+          "name": "string.unquoted.log.jaw",
+          "patterns": [
+            { "include": "#variable-reference" },
+            { "include": "#access-operator" }
+          ]
+        }
       },
       "end": "(?=^(?!\\s*$)(?!\\1\\s+\\S))",
       "contentName": "string.unquoted.log.jaw",
@@ -71,6 +82,7 @@
         "2": { "name": "keyword.control.return.jaw" },
         "4": {
           "patterns": [
+            { "include": "#function-reference" },
             { "include": "#decorator" },
             { "include": "#variable-reference" },
             { "include": "#access-operator" },
@@ -151,14 +163,32 @@
         }
       }
     },
-    "inline-assignment": {
-      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:(?!\\s*[,=]).)*?)(?:(\\s*=\\s*)([^,]*))?",
+    "inline-assignment-with-value": {
+      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)(.*?)(\\s+=\\s+)(\\S.*?)\\s*$",
       "captures": {
         "1": { "name": "variable.other.jaw" },
         "2": { "name": "punctuation.separator.assignment.jaw" },
-        "3": { "name": "string.unquoted.description.jaw" },
+        "3": {
+          "name": "string.unquoted.description.jaw",
+          "patterns": [
+            { "include": "#variable-reference" }
+          ]
+        },
         "4": { "name": "keyword.operator.jaw" },
         "5": { "name": "constant.other.value.jaw" }
+      }
+    },
+    "inline-assignment": {
+      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:[^,](?!\\s+=\\s))*[^,]?)",
+      "captures": {
+        "1": { "name": "variable.other.jaw" },
+        "2": { "name": "punctuation.separator.assignment.jaw" },
+        "3": {
+          "name": "string.unquoted.description.jaw",
+          "patterns": [
+            { "include": "#variable-reference" }
+          ]
+        }
       }
     },
     "inline-assignment-inline": {
@@ -195,6 +225,14 @@
     "variable-reference": {
       "match": "\\[[A-Za-z][A-Za-z0-9_]*\\]",
       "name": "variable.other.jaw"
+    },
+    "variable-access": {
+      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(@)(\\[[A-Za-z][A-Za-z0-9_]*\\])",
+      "captures": {
+        "1": { "name": "variable.other.jaw" },
+        "2": { "name": "keyword.operator.access.jaw" },
+        "3": { "name": "variable.other.jaw" }
+      }
     },
     "access-operator": {
       "match": "(?<=\\])(@)(?=\\[)",

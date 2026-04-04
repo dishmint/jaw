@@ -1,7 +1,5 @@
 # Grammar
 
-WIP grammar for JAW. Once the v1 spec is locked in I'll work on the grammar / lsp etc.
-
 ```
 SOURCE        => REPEAT( VARIABLE | FUNCTION | COMMENT | TEXT )
 

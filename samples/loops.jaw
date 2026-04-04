@@ -1,0 +1,27 @@
+[V] — a vector
+[V1] — The first variable
+[V2] — The second variable
+
+/obverse
+[V]: a list
+	[1] — [L]: length of [V]
+	[^] gives us an upper bound
+	[2] — [P]: tracking position = 0
+	[^] allows us to move along [V]
+	[~] — [P] < [L]
+		[!] — [V]@[P] at index [P]
+		[^] the [!] above means log or print
+		[1] — [P] += 1
+		[^] advance position for the next iteration
+
+/FUNC
+[V1]: a 1D vector, [V2]: a 1D vector
+	[1] — Zip[ [V1], [V2] ]
+	[R]: result
+	[~] — ([A], [B]) in [1]
+		[1] — [R] << [A] + [B]
+		[^] append sum to R
+	[>] [R]
+
+[~] — [X] in [V]
+	[1] — do something with [X]

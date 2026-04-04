@@ -1,0 +1,9 @@
+# Rust
+/target/
+
+# Node
+node_modules/
+editors/vscode/out/
+
+# OS
+.DS_Store

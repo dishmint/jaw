@@ -1,0 +1,3 @@
+[workspace]
+members = ["jaw-parse", "jaw-lsp"]
+resolver = "2"

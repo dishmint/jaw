@@ -1,0 +1,24 @@
+[V] — a 1D vector
+[M] — a matrix #type:2D
+
+[L]: length of [V]
+[R]: result
+[L]: length of [V] = 0
+[Y]: a color = Red
+
+/add [A]: an integer, [B]: an integer
+	[>] [A] + [B]
+
+/subtract
+[A]: an integer, [B]: an integer
+	[1] — [A] - [B]
+	[>] [1]
+
+[*] this is a general comment
+that spans multiple lines
+and keeps going
+
+[1] — add[ [V], [M] ]
+[^] call add with V and M
+
+[!] — done processing

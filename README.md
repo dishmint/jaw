@@ -164,7 +164,7 @@ Decorators are flexible — the user decides what to annotate.
 
 ### Operators
 
-Standard math and programming notation: `+`, `-`, `*`, `/`, `==`, `>`, `<`, `>=`, `<=`, `!=`, etc.
+Standard math and programming notation: `+`, `-`, `*`, `/`, `==`, `>`, `<`, `>=`, `<=`, `!=`, `<<` (append), etc.
 
 Custom operations are just functions:
 ```
@@ -181,9 +181,11 @@ Custom operations are just functions:
 /FUNC
 [V1]: a 1D vector, [V2]: a 1D vector
 	[1] — Zip[ [V1], [V2] ]
+	[R]: result
 	[~] — ([A], [B]) in [1]
-		[1] — [A] + [B]
-	[>] [~]
+		[1] — [R] << [A] + [B]
+		[^] append sum to R
+	[>] [R]
 
 FUNC {1 2 3} {3 2 1} => {4 4 4}
 [^] expected output
@@ -200,7 +202,7 @@ FUNC {1 2 3} {3 2 1} => {4 4 4}
 	[^] allows us to move along [V]
 	[~] — [P] < [L]
 		[!] — `[V][ [P] ]` @ v[`[P]`]
-		[*] the [!] above means log or print
+		[^] the [!] above means log or print
 		[1] — [P] += 1
 		[^] advance position for the next iteration
 ```

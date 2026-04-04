@@ -1,3 +1,6 @@
+use std::collections::HashSet;
+
+use jaw_parse::ast::*;
 use jaw_parse::error::{Diagnostic as ParseDiagnostic, Severity};
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -65,9 +68,146 @@ pub fn to_lsp_diagnostics(source: &str, diags: &[ParseDiagnostic]) -> Vec<LspDia
         .collect()
 }
 
+/// Collect all defined function names from the AST.
+fn collect_function_names(ast: &Source) -> HashSet<String> {
+    let mut names = HashSet::new();
+    for item in &ast.items {
+        if let TopLevel::Function(f) = item {
+            names.insert(f.name.clone());
+        }
+    }
+    names
+}
+
+/// Find bare identifiers in text that match defined function names.
+/// Returns (byte_offset_in_source, identifier) pairs.
+fn find_bare_function_refs(source: &str, text: &str, text_offset: usize, func_names: &HashSet<String>) -> Vec<(usize, String)> {
+    let mut results = Vec::new();
+    let bytes = text.as_bytes();
+    let mut i = 0;
+
+    while i < bytes.len() {
+        // Skip if preceded by '/' — it's already a proper function ref
+        if i > 0 && bytes[i - 1] == b'/' {
+            while i < bytes.len() && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_') {
+                i += 1;
+            }
+            continue;
+        }
+
+        if bytes[i].is_ascii_alphabetic() || bytes[i] == b'_' {
+            let start = i;
+            let mut ident = String::new();
+            while i < bytes.len() && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_') {
+                ident.push(bytes[i] as char);
+                i += 1;
+            }
+
+            // Check if preceded by '/' in the source (not just text)
+            let source_pos = text_offset + start;
+            let preceded_by_slash = source_pos > 0
+                && source.as_bytes().get(source_pos - 1) == Some(&b'/');
+
+            if !preceded_by_slash && func_names.contains(&ident) {
+                results.push((source_pos, ident));
+            }
+        } else {
+            i += 1;
+        }
+    }
+
+    results
+}
+
+/// Scan the AST for bare function name references and produce warnings.
+pub fn check_bare_function_refs(ast: &Source, source: &str) -> Vec<LspDiagnostic> {
+    let func_names = collect_function_names(ast);
+    if func_names.is_empty() {
+        return Vec::new();
+    }
+
+    let mut warnings = Vec::new();
+
+    for item in &ast.items {
+        if let TopLevel::Function(f) = item {
+            check_block_for_bare_refs(&f.body, source, &func_names, &mut warnings);
+        }
+    }
+
+    warnings
+}
+
+fn check_block_for_bare_refs(
+    block: &CodeBlock,
+    source: &str,
+    func_names: &HashSet<String>,
+    warnings: &mut Vec<LspDiagnostic>,
+) {
+    for item in &block.items {
+        match item {
+            BlockItem::Step(step) => {
+                let text = match &step.expression {
+                    Expression::Code(s) => s.as_str(),
+                    Expression::Conditional(c) => {
+                        // Check condition and consequence text in each branch
+                        for branch in &c.branches {
+                            check_text_for_bare_refs(
+                                source, &branch.condition, step.span.start, func_names, warnings,
+                            );
+                            check_text_for_bare_refs(
+                                source, &branch.consequence, step.span.start, func_names, warnings,
+                            );
+                        }
+                        if let Some(ref else_text) = c.else_branch {
+                            check_text_for_bare_refs(
+                                source, else_text, step.span.start, func_names, warnings,
+                            );
+                        }
+                        continue;
+                    }
+                };
+                check_text_for_bare_refs(source, text, step.span.start, func_names, warnings);
+            }
+            BlockItem::Loop(lp) => {
+                check_block_for_bare_refs(&lp.body, source, func_names, warnings);
+            }
+            BlockItem::Parallel(par) => {
+                check_block_for_bare_refs(&par.body, source, func_names, warnings);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn check_text_for_bare_refs(
+    source: &str,
+    text: &str,
+    context_offset: usize,
+    func_names: &HashSet<String>,
+    warnings: &mut Vec<LspDiagnostic>,
+) {
+    // Find the actual position of the expression text within the source
+    let text_offset = source[context_offset..]
+        .find(text)
+        .map(|pos| context_offset + pos)
+        .unwrap_or(context_offset);
+    let refs = find_bare_function_refs(source, text, text_offset, func_names);
+    for (offset, name) in refs {
+        let start = offset_to_position(source, offset);
+        let end = offset_to_position(source, offset + name.len());
+        warnings.push(LspDiagnostic {
+            range: LspRange { start, end },
+            severity: 2, // Warning
+            source: "jaw".to_string(),
+            message: format!("Did you mean `/{}`?", name),
+        });
+    }
+}
+
 /// Build the publishDiagnostics notification params.
-pub fn publish_diagnostics_params(uri: &str, source: &str, diags: &[ParseDiagnostic]) -> Value {
-    let lsp_diags = to_lsp_diagnostics(source, diags);
+pub fn publish_diagnostics_params(uri: &str, source: &str, ast: &Source, diags: &[ParseDiagnostic]) -> Value {
+    let mut lsp_diags = to_lsp_diagnostics(source, diags);
+    lsp_diags.extend(check_bare_function_refs(ast, source));
     json!({
         "uri": uri,
         "diagnostics": lsp_diags

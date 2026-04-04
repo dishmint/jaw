@@ -149,9 +149,9 @@ impl Server {
 
         // Parse and publish diagnostics
         let (ast, diags) = jaw_parse::parse(text);
-        self.asts.insert(uri.to_string(), ast);
 
-        let params = publish_diagnostics_params(uri, text, &diags);
+        let params = publish_diagnostics_params(uri, text, &ast, &diags);
+        self.asts.insert(uri.to_string(), ast);
         let notification = RpcNotification::new("textDocument/publishDiagnostics", params);
         let _ = rpc::write_message(writer, &notification);
     }

@@ -1,0 +1,20 @@
+[*] Test: this file should produce zero warnings
+
+[V] — a vector #mutable
+
+/Process
+[V]: a list
+	[1] — [L]: length of [V]
+	[2] — [P]: tracking position = 0
+	[~] — [P] < [L]
+		[1] — [V]@[P] > 0 ? /Handle[ [V]@[P] ] | /Skip[ [V]@[P] ]
+		[2] — [P] += 1
+	[>] [V]
+
+/Handle [X]: a number
+	[!] — handling [X]
+	[>] [X] * 2
+
+/Skip [X]: a number
+	[!] — #warn skipping [X]
+	[>] 0

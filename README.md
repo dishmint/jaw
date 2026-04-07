@@ -151,6 +151,12 @@ Standard notation: `+`, `-`, `*`, `/`, `==`, `>`, `<`, `>=`, `<=`, `!=`, `<<` (a
 
 See the [Glossary](docs/glossary.md) for a complete reference of all markers and terms.
 
+## Installation
+
+See the [installation docs](docs/installation/) for setup instructions:
+
+- [VS Code](docs/installation/vscode.md)
+
 ## Issues
 
 One of the pain points in developing an explicit pseudocode language is determining how much of the syntax should be defined up front, and how much is at the user's discretion. JAW is flexible enough that plain text can be used in place of exact syntax. Meaning, one could write in natural language what a certain step should perform, or which function should be called with what arguments.

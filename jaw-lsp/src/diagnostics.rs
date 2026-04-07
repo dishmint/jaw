@@ -129,12 +129,46 @@ pub fn check_bare_function_refs(ast: &Source, source: &str) -> Vec<LspDiagnostic
     let mut warnings = Vec::new();
 
     for item in &ast.items {
-        if let TopLevel::Function(f) = item {
-            check_block_for_bare_refs(&f.body, source, &func_names, &mut warnings);
+        match item {
+            TopLevel::Function(f) => {
+                check_block_for_bare_refs(&f.body, source, &func_names, &mut warnings);
+            }
+            TopLevel::Step(step) => {
+                check_step_for_bare_refs(step, source, &func_names, &mut warnings);
+            }
+            _ => {}
         }
     }
 
     warnings
+}
+
+fn check_step_for_bare_refs(
+    step: &Step,
+    source: &str,
+    func_names: &HashSet<String>,
+    warnings: &mut Vec<LspDiagnostic>,
+) {
+    match &step.expression {
+        Expression::Code(s) => {
+            check_text_for_bare_refs(source, s, step.span.start, func_names, warnings);
+        }
+        Expression::Conditional(c) => {
+            for branch in &c.branches {
+                check_text_for_bare_refs(
+                    source, &branch.condition, step.span.start, func_names, warnings,
+                );
+                check_text_for_bare_refs(
+                    source, &branch.consequence, step.span.start, func_names, warnings,
+                );
+            }
+            if let Some(ref else_text) = c.else_branch {
+                check_text_for_bare_refs(
+                    source, else_text, step.span.start, func_names, warnings,
+                );
+            }
+        }
+    }
 }
 
 fn check_block_for_bare_refs(

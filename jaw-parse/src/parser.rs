@@ -60,9 +60,12 @@ impl Parser {
                         }
                     }
                     BracketContent::Number => {
-                        // Step at top level — unusual but valid
-                        self.skip_to_newline();
-                        None
+                        // Step at top level — unusual but valid.
+                        // Reuse the in-block step parser with block_indent = 0.
+                        match self.parse_step_or_complex_cond(0) {
+                            Some(BlockItem::Step(s)) => Some(TopLevel::Step(s)),
+                            _ => None,
+                        }
                     }
                     BracketContent::Caret => self.parse_comment().map(TopLevel::Comment),
                     BracketContent::Asterisk => self.parse_comment().map(TopLevel::Comment),

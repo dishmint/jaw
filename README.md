@@ -6,6 +6,8 @@
 
 <img src="docs/images/example.png" alt="JAW Example" width="600">
 
+<sub>Editor theme in screenshot: [Barva](https://marketplace.visualstudio.com/items?itemName=ovcharovcoder.barva-theme) by ovcharovcoder.</sub>
+
 ## Installation
 
 See the [installation docs](docs/installation/) for setup instructions:

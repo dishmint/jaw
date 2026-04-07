@@ -6,6 +6,12 @@
 
 <img src="docs/images/example.png" alt="JAW Example" width="600">
 
+## Installation
+
+See the [installation docs](docs/installation/) for setup instructions:
+
+- [VS Code](docs/installation/vscode.md)
+
 ## Syntax
 
 ### Variables
@@ -150,12 +156,6 @@ Complex (multi-step branches) using `[+]` and `[-]` blocks:
 Standard notation: `+`, `-`, `*`, `/`, `==`, `>`, `<`, `>=`, `<=`, `!=`, `<<` (append), etc.
 
 See the [Glossary](docs/glossary.md) for a complete reference of all markers and terms.
-
-## Installation
-
-See the [installation docs](docs/installation/) for setup instructions:
-
-- [VS Code](docs/installation/vscode.md)
 
 ## Issues
 

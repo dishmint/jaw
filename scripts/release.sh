@@ -73,14 +73,20 @@ cargo check --quiet
 echo "==> Updating editors/vscode/package-lock.json"
 (cd editors/vscode && npm install --silent)
 
-echo "==> Staging and committing"
-git add \
-  jaw-parse/Cargo.toml \
-  jaw-lsp/Cargo.toml \
-  Cargo.lock \
-  editors/vscode/package.json \
-  editors/vscode/package-lock.json
-git commit -m "Release $TAG"
+if git diff --quiet; then
+  echo "==> Version is already $VERSION; nothing to commit"
+  COMMIT_SHA="$(git rev-parse --short HEAD)"
+else
+  echo "==> Staging and committing"
+  git add \
+    jaw-parse/Cargo.toml \
+    jaw-lsp/Cargo.toml \
+    Cargo.lock \
+    editors/vscode/package.json \
+    editors/vscode/package-lock.json
+  git commit -m "Release $TAG"
+  COMMIT_SHA="$(git rev-parse --short HEAD)"
+fi
 
 echo "==> Tagging $TAG"
 git tag -a "$TAG" -m "Release $TAG"
@@ -88,7 +94,7 @@ git tag -a "$TAG" -m "Release $TAG"
 cat <<EOF
 
 Release prepared:
-  - Commit: $(git rev-parse --short HEAD)
+  - Commit: $COMMIT_SHA
   - Tag:    $TAG
 
 Next steps:
@@ -100,5 +106,6 @@ which builds the jaw-lsp binaries and VSIX and creates the GitHub Release.
 
 To abort instead:
   git tag -d $TAG
-  git reset --hard HEAD~1
+  # If a release commit was created, also undo it:
+  #   git reset --hard HEAD~1
 EOF

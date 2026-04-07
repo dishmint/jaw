@@ -66,10 +66,12 @@
   "devDependencies": {
     "@types/node": "^20.19.39",
     "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^3.4.2",
     "typescript": "^5.0.0"
   },
   "scripts": {
     "build": "tsc -p .",
-    "watch": "tsc -watch -p ."
+    "watch": "tsc -watch -p .",
+    "package": "vsce package"
   }
 }

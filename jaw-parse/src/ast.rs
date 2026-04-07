@@ -12,6 +12,7 @@ pub enum TopLevel {
     Variable(Variable),
     Function(Function),
     Comment(Comment),
+    Step(Step),
     Text(TextNode),
 }
 

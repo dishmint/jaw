@@ -1,6 +1,28 @@
 # VS Code Installation
 
-## Option A: Prebuilt download (recommended)
+## Option A: Install script (recommended, macOS / Linux)
+
+Clone the repo and run:
+
+```bash
+./scripts/install.sh
+```
+
+This downloads the latest release, installs `jaw-lsp` to `~/.local/bin/`
+(override with `JAW_INSTALL_DIR=...`), strips the macOS quarantine
+attribute, and installs the VS Code extension via the `code` CLI. Pass an
+explicit tag to pin a version: `./scripts/install.sh v0.1.1`.
+
+After installing, set `jaw.server.path` in VS Code settings to the absolute
+path of `jaw-lsp` (or skip this step if `~/.local/bin` is on your `PATH`):
+
+```json
+{
+  "jaw.server.path": "/absolute/path/to/jaw-lsp"
+}
+```
+
+## Option B: Prebuilt download (manual)
 
 1. Go to the [Releases page](https://github.com/dishmint/jaw/releases) and download:
    - The `.vsix` extension file (e.g. `jaw-language-0.1.0.vsix`)
@@ -28,7 +50,7 @@
 
    If `jaw-lsp` is on your `PATH`, this step is optional.
 
-## Option B: Build from source
+## Option C: Build from source
 
 ### Prerequisites
 

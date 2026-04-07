@@ -27,7 +27,7 @@
       "beginCaptures": {
         "2": { "name": "comment.line.caret.jaw" }
       },
-      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/))",
+      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
       "patterns": [
         { "include": "#comment-variable-reference" },
         { "include": "#comment-function-reference" }
@@ -39,7 +39,7 @@
       "beginCaptures": {
         "2": { "name": "comment.line.asterisk.jaw" }
       },
-      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/))",
+      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
       "patterns": [
         { "include": "#comment-variable-reference" },
         { "include": "#comment-function-reference" }
@@ -68,7 +68,7 @@
           ]
         }
       },
-      "end": "(?=^(?!\\s*$)(?!\\1\\s+\\S))",
+      "end": "(?=^\\s*(?:`{3,}|~{3,}))|(?=^(?!\\s*$)(?!\\1\\s+\\S))",
       "contentName": "string.unquoted.log.jaw",
       "patterns": [
         { "include": "#decorator" },

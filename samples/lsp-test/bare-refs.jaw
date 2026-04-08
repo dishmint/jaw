@@ -8,10 +8,10 @@
 
 /Calculate
 [X]: a number, [Y]: a number
-	[1] — [R]: Add[ [X], [Y] ]
+	[1] — [R] = Add[ [X], [Y] ]
 	[^] WARNING: bare ref to Add — should suggest /Add
-	[2] — [S]: Multiply[ [R], [Y] ]
+	[2] — [S] = Multiply[ [R], [Y] ]
 	[^] WARNING: bare ref to Multiply — should suggest /Multiply
-	[3] — [T]: /Add[ [R], [S] ]
+	[3] — [T] = /Add[ [R], [S] ]
 	[^] OK: proper /Add reference — no warning
 	[>] [T]

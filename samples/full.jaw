@@ -30,7 +30,7 @@ based on a configurable threshold
 	[R]: results
 
 	[~] — [P] < [L]
-		[1] — [C]: /classify[ [V]@[P], [T] ]
+		[1] — [C] = /classify[ [V]@[P], [T] ]
 		[^] classify returns a transformed value
 		[2] — [C] > 0 ?
 			[+] — [R] << [C]
@@ -51,10 +51,10 @@ based on a configurable threshold
 /main
 [V]: a list, [T]: a threshold
 	[&]
-		[1] — [R1]: /process[ [V], [T] ]
-		[2] — [R2]: /process[ [V], 0 ]
+		[1] — [R1] = /process[ [V], [T] ]
+		[2] — [R2] = /process[ [V], 0 ]
 	[^] process in parallel with different thresholds
 
-	[1] — [M]: /merge[ [R1], [R2] ]
+	[1] — [M] = /merge[ [R1], [R2] ]
 	[!] — final result: [M]
 	[>] [M]

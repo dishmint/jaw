@@ -289,7 +289,7 @@ impl Parser {
         let desc = self.consume_text_until(&[TokenKind::Equals, TokenKind::Comma]);
         let value = if matches!(self.peek_kind(), Some(TokenKind::Equals)) {
             self.advance();
-            Some(self.consume_text_until(&[TokenKind::Comma]))
+            Some(self.consume_value_with_balanced_brackets())
         } else {
             None
         };
@@ -324,8 +324,14 @@ impl Parser {
                 self.advance();
             }
 
-            if self.at_eof() || self.at_newline() {
+            if self.at_eof() {
                 break;
+            }
+
+            // Blank-but-indented line: skip the trailing newline and keep going.
+            if self.at_newline() {
+                self.advance();
+                continue;
             }
 
             match self.peek_kind() {
@@ -1010,6 +1016,33 @@ impl Parser {
         }
     }
 
+    /// Consume tokens until end-of-line or a top-level comma (depth 0).
+    /// Bracket pairs `[` / `]` are tracked so commas inside them are
+    /// preserved as part of the value (e.g. `Length[ [V], [W] ]`).
+    fn consume_value_with_balanced_brackets(&mut self) -> String {
+        let start = self.current_span().start;
+        let mut depth: i32 = 0;
+        while !self.at_eof() && !self.at_newline() {
+            match self.peek_kind() {
+                Some(TokenKind::LBracket) => depth += 1,
+                Some(TokenKind::RBracket) => {
+                    if depth > 0 {
+                        depth -= 1;
+                    }
+                }
+                Some(TokenKind::Comma) if depth == 0 => break,
+                _ => {}
+            }
+            self.advance();
+        }
+        let end = self.prev_span().end;
+        if end > start {
+            self.source_text(start, end).trim().to_string()
+        } else {
+            String::new()
+        }
+    }
+
     fn consume_text_until(&mut self, stops: &[TokenKind]) -> String {
         let start = self.current_span().start;
         while !self.at_eof() && !self.at_newline() {
@@ -1097,6 +1130,46 @@ mod tests {
                 assert_eq!(f.args.len(), 2);
                 assert_eq!(f.args[0].name, "A");
                 assert_eq!(f.args[1].name, "B");
+            }
+            _ => panic!("expected function"),
+        }
+    }
+
+    #[test]
+    fn test_function_body_survives_blank_lines_between_steps() {
+        // Regression: blank-but-indented lines (`\t\n`) used to
+        // terminate function-body parsing, kicking later steps out
+        // to top-level and silently dropping any complex conditional
+        // that followed a blank line.
+        let (ast, _) = parse("/foo\n\t[1] — code\n\t\n\t[2] — more code\n");
+        match &ast.items[0] {
+            TopLevel::Function(f) => {
+                assert_eq!(
+                    f.body.items.len(),
+                    2,
+                    "both steps should be inside the function body"
+                );
+            }
+            _ => panic!("expected function"),
+        }
+    }
+
+    #[test]
+    fn test_parse_function_arg_value_with_balanced_brackets() {
+        let (ast, diags) =
+            parse("/foo [X]: count = Length[ [V], [W] ], [Y]: name\n\t[>] [X]");
+        assert!(diags.is_empty(), "unexpected diags: {:?}", diags);
+        match &ast.items[0] {
+            TopLevel::Function(f) => {
+                assert_eq!(f.args.len(), 2);
+                assert_eq!(f.args[0].name, "X");
+                assert_eq!(
+                    f.args[0].value.as_deref(),
+                    Some("Length[ [V], [W] ]"),
+                    "value should include the inner comma"
+                );
+                assert_eq!(f.args[1].name, "Y");
+                assert_eq!(f.args[1].description, "name");
             }
             _ => panic!("expected function"),
         }

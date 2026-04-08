@@ -13,9 +13,13 @@
 [R]: a role
 	[1] — [R] == Admin ? Grant[ [R] ] | Deny[ [R] ]
 	[^] WARNING: bare refs to Grant and Deny
-
+	
 	[2] — [R] == Admin ? /Grant[ [R] ] | /Deny[ [R] ]
 	[^] OK: proper refs — no warnings
-
+	
 	[3] — [R] == Admin ? /Grant[ [R] ] | [R] == User ? Limit[ [R] ] | /Deny[ [R] ]
 	[^] WARNING: bare ref to Limit only
+	
+	[4] — [3] == Success ? 
+		[+] — Grant[ [R] ]
+		[-] — Deny[ [R] ]

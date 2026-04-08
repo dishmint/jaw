@@ -65,8 +65,7 @@
           "patterns": [
             { "include": "#variable-reference" },
             { "include": "#access-operator" },
-            { "include": "#step-reference" },
-            { "include": "#number-literal" }
+            { "include": "#step-reference" }
           ]
         }
       },
@@ -76,8 +75,7 @@
         { "include": "#decorator" },
         { "include": "#variable-reference" },
         { "include": "#access-operator" },
-        { "include": "#step-reference" },
-        { "include": "#number-literal" }
+        { "include": "#step-reference" }
       ]
     },
     "return": {
@@ -171,8 +169,7 @@
           "patterns": [
             { "include": "#decorator" },
             { "include": "#variable-reference" },
-            { "include": "#step-reference" },
-            { "include": "#number-literal" }
+            { "include": "#step-reference" }
           ]
         }
       }
@@ -218,11 +215,17 @@
       }
     },
     "inline-assignment-inline": {
-      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:(?!\\s*[,=]).)*?)(?:(\\s*=\\s*)(\\S+))?",
+      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:(?!\\s*[,=]).)*)(?:(\\s*=\\s*)((?:[^,\\[]|(?<br>\\[(?:[^\\[\\]]|\\g<br>)*\\]))+))?",
       "captures": {
         "1": { "name": "variable.other.jaw" },
         "2": { "name": "punctuation.separator.assignment.jaw" },
-        "3": { "name": "string.unquoted.description.jaw" },
+        "3": {
+          "name": "string.unquoted.description.jaw",
+          "patterns": [
+            { "include": "#variable-reference" },
+            { "include": "#step-reference" }
+          ]
+        },
         "4": { "name": "keyword.operator.jaw" },
         "5": {
           "name": "constant.other.value.jaw",

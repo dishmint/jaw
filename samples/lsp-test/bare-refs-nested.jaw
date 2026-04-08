@@ -9,15 +9,15 @@
 /Pipeline
 [V]: a list of urls
 	[~] — [U] in [V]
-		[1] — [D]: Fetch[ [U] ]
+		[1] — [D] = Fetch[ [U] ]
 		[^] WARNING: bare ref to Fetch
-		[2] — [R]: /Transform[ [D] ]
+		[2] — [R] = /Transform[ [D] ]
 		[^] OK: proper ref
 
 	[&]
-		[1] — [A]: Fetch[ url1 ]
+		[1] — [A] = Fetch[ url1 ]
 		[^] WARNING: bare ref to Fetch
-		[2] — [B]: Fetch[ url2 ]
+		[2] — [B] = Fetch[ url2 ]
 		[^] WARNING: bare ref to Fetch
 	[3] — /Transform[ [A] ]
 	[^] OK: proper ref

@@ -214,6 +214,11 @@ fn check_block_for_bare_refs(
             BlockItem::InlineAssign(assign) => {
                 check_inline_assign_for_bare_refs(assign, source, func_names, warnings);
             }
+            BlockItem::ComplexCond(cc) => {
+                check_text_for_bare_refs(source, &cc.condition, cc.span.start, func_names, warnings);
+                check_text_for_bare_refs(source, &cc.true_branch, cc.span.start, func_names, warnings);
+                check_text_for_bare_refs(source, &cc.false_branch, cc.span.start, func_names, warnings);
+            }
             _ => {}
         }
     }
@@ -279,6 +284,24 @@ mod tests {
         assert!(
             messages.iter().any(|m| m.contains("`/Length`")),
             "expected a `did you mean /Length?` warning, got: {:?}",
+            messages
+        );
+    }
+
+    #[test]
+    fn warns_on_bare_function_ref_in_complex_cond_branches() {
+        let source = "/Grant [R]: a role\n    [>] [R]\n\n/Deny [R]: a role\n    [>] [R]\n\n/CheckAccess [R]: a role\n    [1] — [R] == Admin ?\n        [+] — Grant[ [R] ]\n        [-] — Deny[ [R] ]\n";
+        let (ast, _diags) = parse(source);
+        let warnings = check_bare_function_refs(&ast, source);
+        let messages: Vec<&str> = warnings.iter().map(|w| w.message.as_str()).collect();
+        assert!(
+            messages.iter().any(|m| m.contains("`/Grant`")),
+            "expected a `did you mean /Grant?` warning in [+] branch, got: {:?}",
+            messages
+        );
+        assert!(
+            messages.iter().any(|m| m.contains("`/Deny`")),
+            "expected a `did you mean /Deny?` warning in [-] branch, got: {:?}",
             messages
         );
     }

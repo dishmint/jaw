@@ -324,8 +324,14 @@ impl Parser {
                 self.advance();
             }
 
-            if self.at_eof() || self.at_newline() {
+            if self.at_eof() {
                 break;
+            }
+
+            // Blank-but-indented line: skip the trailing newline and keep going.
+            if self.at_newline() {
+                self.advance();
+                continue;
             }
 
             match self.peek_kind() {
@@ -1124,6 +1130,25 @@ mod tests {
                 assert_eq!(f.args.len(), 2);
                 assert_eq!(f.args[0].name, "A");
                 assert_eq!(f.args[1].name, "B");
+            }
+            _ => panic!("expected function"),
+        }
+    }
+
+    #[test]
+    fn test_function_body_survives_blank_lines_between_steps() {
+        // Regression: blank-but-indented lines (`\t\n`) used to
+        // terminate function-body parsing, kicking later steps out
+        // to top-level and silently dropping any complex conditional
+        // that followed a blank line.
+        let (ast, _) = parse("/foo\n\t[1] — code\n\t\n\t[2] — more code\n");
+        match &ast.items[0] {
+            TopLevel::Function(f) => {
+                assert_eq!(
+                    f.body.items.len(),
+                    2,
+                    "both steps should be inside the function body"
+                );
             }
             _ => panic!("expected function"),
         }

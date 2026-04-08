@@ -190,7 +190,17 @@
           ]
         },
         "4": { "name": "keyword.operator.jaw" },
-        "5": { "name": "constant.other.value.jaw" }
+        "5": {
+          "name": "constant.other.value.jaw",
+          "patterns": [
+            { "include": "#function-reference" },
+            { "include": "#variable-reference" },
+            { "include": "#access-operator" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
+            { "include": "#operators" }
+          ]
+        }
       }
     },
     "inline-assignment": {
@@ -214,7 +224,17 @@
         "2": { "name": "punctuation.separator.assignment.jaw" },
         "3": { "name": "string.unquoted.description.jaw" },
         "4": { "name": "keyword.operator.jaw" },
-        "5": { "name": "constant.other.value.jaw" }
+        "5": {
+          "name": "constant.other.value.jaw",
+          "patterns": [
+            { "include": "#function-reference" },
+            { "include": "#variable-reference" },
+            { "include": "#access-operator" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
+            { "include": "#operators" }
+          ]
+        }
       }
     },
     "step": {

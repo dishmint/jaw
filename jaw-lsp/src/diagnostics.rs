@@ -131,6 +131,9 @@ pub fn check_bare_function_refs(ast: &Source, source: &str) -> Vec<LspDiagnostic
     for item in &ast.items {
         match item {
             TopLevel::Function(f) => {
+                for arg in &f.args {
+                    check_inline_assign_for_bare_refs(arg, source, &func_names, &mut warnings);
+                }
                 check_block_for_bare_refs(&f.body, source, &func_names, &mut warnings);
             }
             TopLevel::Step(step) => {
@@ -208,8 +211,22 @@ fn check_block_for_bare_refs(
             BlockItem::Parallel(par) => {
                 check_block_for_bare_refs(&par.body, source, func_names, warnings);
             }
+            BlockItem::InlineAssign(assign) => {
+                check_inline_assign_for_bare_refs(assign, source, func_names, warnings);
+            }
             _ => {}
         }
+    }
+}
+
+fn check_inline_assign_for_bare_refs(
+    assign: &InlineAssign,
+    source: &str,
+    func_names: &HashSet<String>,
+    warnings: &mut Vec<LspDiagnostic>,
+) {
+    if let Some(value) = &assign.value {
+        check_text_for_bare_refs(source, value, assign.span.start, func_names, warnings);
     }
 }
 
@@ -246,4 +263,36 @@ pub fn publish_diagnostics_params(uri: &str, source: &str, ast: &Source, diags: 
         "uri": uri,
         "diagnostics": lsp_diags
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jaw_parse::parse;
+
+    #[test]
+    fn warns_on_bare_function_ref_in_inline_assignment_value() {
+        let source = "/Length [X]: a vector\n    [>] 0\n\n/Caller\n    [F]: forward end = Length[ [V] ] - 1\n";
+        let (ast, _diags) = parse(source);
+        let warnings = check_bare_function_refs(&ast, source);
+        let messages: Vec<&str> = warnings.iter().map(|w| w.message.as_str()).collect();
+        assert!(
+            messages.iter().any(|m| m.contains("`/Length`")),
+            "expected a `did you mean /Length?` warning, got: {:?}",
+            messages
+        );
+    }
+
+    #[test]
+    fn warns_on_bare_function_ref_in_function_arg_default() {
+        let source = "/Length [X]: a vector\n    [>] 0\n\n/Caller [N]: count = Length[ [V] ]\n    [>] [N]\n";
+        let (ast, _diags) = parse(source);
+        let warnings = check_bare_function_refs(&ast, source);
+        let messages: Vec<&str> = warnings.iter().map(|w| w.message.as_str()).collect();
+        assert!(
+            messages.iter().any(|m| m.contains("`/Length`")),
+            "expected a `did you mean /Length?` warning on arg default, got: {:?}",
+            messages
+        );
+    }
 }

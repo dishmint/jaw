@@ -64,7 +64,9 @@
           "name": "string.unquoted.log.jaw",
           "patterns": [
             { "include": "#variable-reference" },
-            { "include": "#access-operator" }
+            { "include": "#access-operator" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" }
           ]
         }
       },
@@ -73,7 +75,9 @@
       "patterns": [
         { "include": "#decorator" },
         { "include": "#variable-reference" },
-        { "include": "#access-operator" }
+        { "include": "#access-operator" },
+        { "include": "#step-reference" },
+        { "include": "#number-literal" }
       ]
     },
     "return": {
@@ -86,6 +90,8 @@
             { "include": "#decorator" },
             { "include": "#variable-reference" },
             { "include": "#access-operator" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
             { "include": "#operators" }
           ]
         }
@@ -100,6 +106,8 @@
           "patterns": [
             { "include": "#in-keyword" },
             { "include": "#variable-reference" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
             { "include": "#operators" }
           ]
         }
@@ -118,6 +126,8 @@
           "patterns": [
             { "include": "#function-reference" },
             { "include": "#variable-reference" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
             { "include": "#operators" }
           ]
         }
@@ -132,6 +142,8 @@
           "patterns": [
             { "include": "#function-reference" },
             { "include": "#variable-reference" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
             { "include": "#operators" }
           ]
         }
@@ -158,7 +170,9 @@
         "4": {
           "patterns": [
             { "include": "#decorator" },
-            { "include": "#variable-reference" }
+            { "include": "#variable-reference" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" }
           ]
         }
       }
@@ -171,7 +185,8 @@
         "3": {
           "name": "string.unquoted.description.jaw",
           "patterns": [
-            { "include": "#variable-reference" }
+            { "include": "#variable-reference" },
+            { "include": "#step-reference" }
           ]
         },
         "4": { "name": "keyword.operator.jaw" },
@@ -186,7 +201,8 @@
         "3": {
           "name": "string.unquoted.description.jaw",
           "patterns": [
-            { "include": "#variable-reference" }
+            { "include": "#variable-reference" },
+            { "include": "#step-reference" }
           ]
         }
       }
@@ -217,6 +233,8 @@
             { "include": "#variable-reference" },
             { "include": "#access-operator" },
             { "include": "#in-keyword" },
+            { "include": "#step-reference" },
+            { "include": "#number-literal" },
             { "include": "#operators" }
           ]
         }
@@ -267,6 +285,18 @@
     "operators": {
       "match": "<<|==|!=|>=|<=|\\+=|-=|\\*=|/=|[+\\-*/><]",
       "name": "keyword.operator.jaw"
+    },
+    "step-reference": {
+      "match": "(\\[)(\\d+)(\\])",
+      "captures": {
+        "1": { "name": "punctuation.section.step-reference.jaw" },
+        "2": { "name": "constant.numeric.step.jaw" },
+        "3": { "name": "punctuation.section.step-reference.jaw" }
+      }
+    },
+    "number-literal": {
+      "match": "-?\\d+(\\.\\d+)?",
+      "name": "constant.numeric.jaw"
     }
   }
 }

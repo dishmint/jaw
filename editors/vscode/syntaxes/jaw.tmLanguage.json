@@ -218,7 +218,7 @@
       }
     },
     "inline-assignment-inline": {
-      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:(?!\\s*[,=]).)*?)(?:(\\s*=\\s*)(\\S+))?",
+      "match": "(\\[[A-Za-z][A-Za-z0-9_]*\\])(\\s*:\\s*)((?:(?!\\s*[,=]).)*)(?:(\\s*=\\s*)(\\S+))?",
       "captures": {
         "1": { "name": "variable.other.jaw" },
         "2": { "name": "punctuation.separator.assignment.jaw" },

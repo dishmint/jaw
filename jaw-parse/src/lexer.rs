@@ -57,6 +57,11 @@ impl Lexer {
                 '[' => {
                     self.lex_bracket_expr(&mut tokens);
                 }
+                ']' => {
+                    let start = self.byte_pos;
+                    self.advance();
+                    tokens.push(Token::new(TokenKind::RBracket, Span::new(start, self.byte_pos)));
+                }
                 '/' => {
                     if self.is_function_start() {
                         let start = self.byte_pos;

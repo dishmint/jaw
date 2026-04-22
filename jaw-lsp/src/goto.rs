@@ -3,38 +3,48 @@ use jaw_parse::token::Span;
 use serde_json::{json, Value};
 
 /// Find the definition of a variable referenced at the given byte offset.
+///
+/// Scoping rules: prefer the enclosing function's args and inline-assigns
+/// over top-level variables. Never resolve a reference to a same-named
+/// variable inside a *different* function.
 pub fn goto_definition(ast: &Source, source: &str, offset: usize) -> Option<Value> {
-    // First, figure out what identifier is at the offset
     let ident = find_identifier_at(source, offset)?;
 
-    // Search for the definition
+    if let Some(func) = find_enclosing_function(ast, offset) {
+        if let Some(loc) = find_in_function(func, &ident, source) {
+            return Some(loc);
+        }
+    }
+
     for item in &ast.items {
-        match item {
-            TopLevel::Variable(v) => {
-                if v.name == ident {
-                    return Some(location_response(&v.span, source));
-                }
+        if let TopLevel::Variable(v) = item {
+            if v.name == ident {
+                return Some(location_response(&v.span, source));
             }
-            TopLevel::Function(f) => {
-                if f.name == ident {
-                    return Some(location_response(&f.span, source));
-                }
-                // Check function args
-                for arg in &f.args {
-                    if arg.name == ident {
-                        return Some(location_response(&arg.span, source));
-                    }
-                }
-                // Check inline assigns in function body
-                if let Some(loc) = search_block_for_def(&f.body, &ident, source) {
-                    return Some(loc);
-                }
-            }
-            _ => {}
         }
     }
 
     None
+}
+
+fn find_enclosing_function(ast: &Source, offset: usize) -> Option<&Function> {
+    for item in &ast.items {
+        if let TopLevel::Function(f) = item {
+            if offset >= f.span.start && offset < f.span.end {
+                return Some(f);
+            }
+        }
+    }
+    None
+}
+
+fn find_in_function(f: &Function, ident: &str, source: &str) -> Option<Value> {
+    for arg in &f.args {
+        if arg.name == ident {
+            return Some(location_response(&arg.span, source));
+        }
+    }
+    search_block_for_def(&f.body, ident, source)
 }
 
 fn search_block_for_def(block: &CodeBlock, ident: &str, source: &str) -> Option<Value> {
@@ -119,4 +129,69 @@ fn location_response(span: &Span, source: &str) -> Value {
             "end": { "line": end_line, "character": end_char }
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jaw_parse::parse;
+
+    #[test]
+    fn resolves_arg_within_same_function() {
+        let source = "/classify [X]: a number\n\t[>] [X]\n\n/handle [X]: a number\n\t[>] [X] * 2\n";
+        let (ast, _diags) = parse(source);
+
+        // `[X]` on the `[>]` line of /handle — second function.
+        let offset = source.find("[>] [X] * 2").unwrap() + 5;
+        let loc = goto_definition(&ast, source, offset).expect("definition found");
+
+        // It must point at /handle's [X], which is on line 3 (0-indexed), not /classify's line 0.
+        let line = loc["range"]["start"]["line"].as_u64().unwrap();
+        assert_eq!(line, 3, "expected /handle's [X] on line 3, got line {}", line);
+    }
+
+    #[test]
+    fn falls_back_to_top_level_variable() {
+        let source = "[V] — a vector\n[T] — a threshold\n\n/use [X]: a number\n\t[>] [V] + [X]\n";
+        let (ast, _diags) = parse(source);
+
+        // Click on `[V]` inside /use.
+        let offset = source.find("[>] [V]").unwrap() + 5;
+        let loc = goto_definition(&ast, source, offset).expect("definition found");
+
+        let line = loc["range"]["start"]["line"].as_u64().unwrap();
+        assert_eq!(line, 0, "expected top-level [V] on line 0, got line {}", line);
+    }
+
+    #[test]
+    fn does_not_leak_across_functions() {
+        // /a has [X] but /b does not — clicking [X] in /b must NOT resolve to /a.
+        let source = "/a [X]: a number\n\t[>] [X]\n\n/b\n[Y]: a thing\n\t[>] [X]\n";
+        let (ast, _diags) = parse(source);
+
+        let offset = source.rfind("[X]").unwrap() + 1;
+        let loc = goto_definition(&ast, source, offset);
+
+        assert!(
+            loc.is_none(),
+            "expected no definition (dangling ref), got {:?}",
+            loc
+        );
+    }
+
+    #[test]
+    fn resolves_inline_assign_inside_function_body() {
+        // An inline-assign declared as its own line in the function body, then
+        // referenced later in a step expression, should resolve back to the assign.
+        let source = "/process\n[V]: a list\n\t[R]: results\n\t[1] — [R]\n";
+        let (ast, _diags) = parse(source);
+
+        // Point at the `R` inside `[R]` on the step line.
+        let ref_offset = source.rfind("[R]").unwrap() + 1;
+        let loc = goto_definition(&ast, source, ref_offset).expect("definition found");
+        let line = loc["range"]["start"]["line"].as_u64().unwrap();
+        // [R]: results is on line 2 (0-indexed).
+        assert_eq!(line, 2);
+    }
+
 }

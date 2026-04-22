@@ -3,6 +3,7 @@ use std::io::{BufRead, Write};
 
 use serde_json::{json, Value};
 
+use crate::completion::completion_at;
 use crate::diagnostics::publish_diagnostics_params;
 use crate::goto::goto_definition;
 use crate::hover::hover_at;
@@ -57,7 +58,10 @@ impl Server {
                     "capabilities": {
                         "textDocumentSync": 1,
                         "hoverProvider": true,
-                        "definitionProvider": true
+                        "definitionProvider": true,
+                        "completionProvider": {
+                            "triggerCharacters": ["["]
+                        }
                     },
                     "serverInfo": {
                         "name": "jaw-lsp",
@@ -117,6 +121,12 @@ impl Server {
 
             "textDocument/definition" => {
                 let result = self.handle_definition(&msg.params);
+                let resp = RpcResponse::success(msg.id, result.unwrap_or(Value::Null));
+                let _ = rpc::write_message(writer, &resp);
+            }
+
+            "textDocument/completion" => {
+                let result = self.handle_completion(&msg.params);
                 let resp = RpcResponse::success(msg.id, result.unwrap_or(Value::Null));
                 let _ = rpc::write_message(writer, &resp);
             }
@@ -185,6 +195,19 @@ impl Server {
             obj.insert("uri".to_string(), json!(uri));
         }
         Some(result)
+    }
+
+    fn handle_completion(&self, params: &Option<Value>) -> Option<Value> {
+        let params = params.as_ref()?;
+        let uri = params["textDocument"]["uri"].as_str()?;
+        let line = params["position"]["line"].as_u64()? as usize;
+        let character = params["position"]["character"].as_u64()? as usize;
+
+        let source = self.documents.get(uri)?;
+        let ast = self.asts.get(uri)?;
+        let offset = position_to_offset(source, line, character)?;
+
+        Some(completion_at(ast, source, offset))
     }
 }
 

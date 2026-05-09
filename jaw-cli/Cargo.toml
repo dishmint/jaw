@@ -1,0 +1,8 @@
+[package]
+name = "jaw-cli"
+version = "0.1.3"
+edition = "2021"
+
+[[bin]]
+name = "jaw"
+path = "src/main.rs"

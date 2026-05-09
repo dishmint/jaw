@@ -63,6 +63,7 @@
         "6": {
           "name": "string.unquoted.log.jaw",
           "patterns": [
+            { "include": "#function-reference" },
             { "include": "#variable-reference" },
             { "include": "#access-operator" },
             { "include": "#step-reference" }
@@ -73,6 +74,7 @@
       "contentName": "string.unquoted.log.jaw",
       "patterns": [
         { "include": "#decorator" },
+        { "include": "#function-reference" },
         { "include": "#variable-reference" },
         { "include": "#access-operator" },
         { "include": "#step-reference" }

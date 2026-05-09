@@ -1,0 +1,8 @@
+[*] — Repro for #44: cmd+click [X] inside /handle should jump to /handle's [X]
+[*] — on line 5, NOT to /classify's [X] on line 1.
+
+/classify [X]: a number
+	[>] [X]
+
+/handle [X]: a number
+	[>] [X] * 2

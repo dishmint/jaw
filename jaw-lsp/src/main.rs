@@ -1,3 +1,4 @@
+mod completion;
 mod diagnostics;
 mod goto;
 mod hover;

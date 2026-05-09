@@ -9,13 +9,64 @@
 # Usage:
 #   scripts/install.sh                # latest release
 #   scripts/install.sh v0.1.1         # specific tag
+#   scripts/install.sh --from-source  # build local working tree and install
 #
 # Requirements: curl, tar, and (for the extension) the `code` CLI on PATH.
+# --from-source additionally needs cargo.
 
 set -euo pipefail
 
 REPO="dishmint/jaw"
 INSTALL_DIR="${JAW_INSTALL_DIR:-$HOME/.local/bin}"
+
+# --- from-source mode --------------------------------------------------------
+if [[ "${1:-}" == "--from-source" ]]; then
+  REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  if [[ ! -f "$REPO_ROOT/Cargo.toml" ]]; then
+    echo "Could not find Cargo.toml at $REPO_ROOT" >&2
+    exit 1
+  fi
+
+  CARGO="$(command -v cargo || true)"
+  if [[ -z "$CARGO" && -x "$HOME/.cargo/bin/cargo" ]]; then
+    CARGO="$HOME/.cargo/bin/cargo"
+  fi
+  if [[ -z "$CARGO" ]]; then
+    echo "cargo not found on PATH or at ~/.cargo/bin/cargo" >&2
+    exit 1
+  fi
+
+  echo "==> Building jaw-lsp from $REPO_ROOT"
+  (cd "$REPO_ROOT" && "$CARGO" build --release -p jaw-lsp)
+
+  BIN="$REPO_ROOT/target/release/jaw-lsp"
+  if [[ ! -x "$BIN" ]]; then
+    echo "Build did not produce $BIN" >&2
+    exit 1
+  fi
+
+  mkdir -p "$INSTALL_DIR"
+  install -m 0755 "$BIN" "$INSTALL_DIR/jaw-lsp"
+
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    xattr -d com.apple.quarantine "$INSTALL_DIR/jaw-lsp" 2>/dev/null || true
+  fi
+
+  echo "==> Installed jaw-lsp to $INSTALL_DIR/jaw-lsp"
+  ls -la "$INSTALL_DIR/jaw-lsp"
+
+  cat <<EOF
+
+Done. Make sure $INSTALL_DIR is on your PATH, then set in VS Code:
+
+  "jaw.server.path": "$INSTALL_DIR/jaw-lsp"
+
+Restart VS Code (or run "Developer: Restart Extension Host") to pick
+up the new binary. The VSIX is not rebuilt by --from-source; if you've
+edited the extension, rebuild it manually from editors/vscode/.
+EOF
+  exit 0
+fi
 
 # --- detect platform ---------------------------------------------------------
 uname_s="$(uname -s)"
@@ -82,6 +133,7 @@ if [[ "$uname_s" == "Darwin" ]]; then
 fi
 
 echo "==> Installed jaw-lsp to $INSTALL_DIR/jaw-lsp"
+ls -la "$INSTALL_DIR/jaw-lsp"
 
 # --- install the VS Code extension -------------------------------------------
 # The VSIX file name is published as jaw-language-<version>.vsix where <version>

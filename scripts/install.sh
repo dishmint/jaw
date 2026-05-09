@@ -23,11 +23,14 @@ uname_m="$(uname -m)"
 
 case "$uname_s" in
   Darwin)
-    case "$uname_m" in
-      arm64)  TARGET="aarch64-apple-darwin" ;;
-      x86_64) TARGET="x86_64-apple-darwin" ;;
-      *) echo "Unsupported macOS arch: $uname_m" >&2; exit 1 ;;
-    esac
+    # `uname -m` reports the *process* arch, which inherits from the parent
+    # and reads as x86_64 under Rosetta even on Apple Silicon. Use sysctl to
+    # query the host arch directly.
+    if [[ "$(sysctl -n hw.optional.arm64 2>/dev/null)" == "1" ]]; then
+      TARGET="aarch64-apple-darwin"
+    else
+      TARGET="x86_64-apple-darwin"
+    fi
     ARCHIVE_EXT="tar.gz"
     ;;
   Linux)

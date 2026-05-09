@@ -1,0 +1,26 @@
+[V] — a vector
+[X] — some value
+[T] — a threshold
+
+[!] — done processing
+[^] plain log
+
+[!] — current value: [X]
+[^] log with a variable ref
+
+[!] — calling /Process now
+[^] log with a function ref (regression cover for #40)
+
+[!] — see step [3] for context
+[^] log with a step ref
+
+[!] — #warn skipping [X] at threshold [T]
+[^] log with a decorator and variable refs
+
+[!] — FlagDetail:
+	[1] — caller: /Process
+	[2] — value: [X]
+[^] log title form, with continuation lines
+
+[!] — element [V]@[X] is out of range
+[^] log with an array-access expression

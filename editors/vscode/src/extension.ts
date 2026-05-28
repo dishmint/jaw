@@ -13,6 +13,9 @@ const JAW_BOLD_SCOPES = [
   { scope: "constant.numeric.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "punctuation.definition.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "markup.italic.log-title.jaw", settings: { fontStyle: "italic" } },
+  { scope: "keyword.other.note.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
+  { scope: "markup.bold.note.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
+  { scope: "markup.bold.note-title.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
 ];
 
 async function ensureBoldStyles() {

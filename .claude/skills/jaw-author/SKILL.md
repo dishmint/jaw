@@ -39,7 +39,8 @@ These rules are easy to get wrong and the parser/LSP will not all flag them:
 | `[~] —` | Loop. Body is an indented block. Iteration form: `[A] in [Coll]` or `([A], [B]) in [Pairs]` |
 | `[&]` | Parallel block. Body is indented. |
 | `[+] —` / `[-] —` | True/false branches of a complex (multi-step) conditional |
-| `[!] —` | Log / print |
+| `[•] —` | Log / print |
+| `[!] —` | Important note (rendered red and bold) |
 | `[>]` | Return |
 | `[^]` | Code comment tied to the preceding step |
 | `[*]` | Standalone general comment |

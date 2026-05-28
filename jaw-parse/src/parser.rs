@@ -365,6 +365,11 @@ impl Parser {
                             }
                         }
                         BracketContent::Bang => {
+                            if let Some(note) = self.parse_note() {
+                                items.push(BlockItem::Note(note));
+                            }
+                        }
+                        BracketContent::Bullet => {
                             if let Some(log) = self.parse_log() {
                                 items.push(BlockItem::Log(log));
                             }
@@ -715,6 +720,26 @@ impl Parser {
     fn parse_log(&mut self) -> Option<Log> {
         let start = self.current_span();
 
+        // Consume [•] —
+        self.advance(); // [
+        self.advance(); // •
+        self.advance(); // ]
+
+        if matches!(self.peek_kind(), Some(TokenKind::EmDash)) {
+            self.advance();
+        }
+
+        let text = self.consume_rest_of_line();
+
+        Some(Log {
+            text: text.trim().to_string(),
+            span: start.merge(self.prev_span()),
+        })
+    }
+
+    fn parse_note(&mut self) -> Option<Note> {
+        let start = self.current_span();
+
         // Consume [!] —
         self.advance(); // [
         self.advance(); // !
@@ -726,7 +751,7 @@ impl Parser {
 
         let text = self.consume_rest_of_line();
 
-        Some(Log {
+        Some(Note {
             text: text.trim().to_string(),
             span: start.merge(self.prev_span()),
         })
@@ -825,6 +850,7 @@ impl Parser {
             TokenKind::Caret => BracketContent::Caret,
             TokenKind::Asterisk => BracketContent::Asterisk,
             TokenKind::Bang => BracketContent::Bang,
+            TokenKind::Bullet => BracketContent::Bullet,
             TokenKind::GreaterThan => BracketContent::GreaterThan,
             TokenKind::Plus => BracketContent::Plus,
             TokenKind::Minus => BracketContent::Minus,
@@ -1075,6 +1101,7 @@ enum BracketContent {
     Caret,
     Asterisk,
     Bang,
+    Bullet,
     GreaterThan,
     Plus,
     Minus,

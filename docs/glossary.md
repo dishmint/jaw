@@ -11,7 +11,8 @@
 | `[<n>] —` | Step | A numbered algorithm step |
 | `[^]` | Code Comment | A comment tied to the preceding step |
 | `[*]` | General Comment | A standalone comment, not tied to a step |
-| `[!] —` | Log | A log/print statement |
+| `[•] —` | Log | A log/print statement |
+| `[!] —` | Note | An important note, rendered red and bold |
 | `[>]` | Return | Returns a value from a function |
 | `[~] —` | Loop | Repeats steps governed by a condition or iterator |
 | `[&]` | Parallel | Marks steps that execute concurrently |
@@ -32,7 +33,7 @@
 | **Code Block** | An indented group of steps belonging to a function, loop, or parallel block |
 | **Decorator** | Metadata annotation on a variable, step, or function (e.g., `#mutable`, `#error`) |
 | **Inline Assignment** | Declaring a variable within a code block, with an optional value |
-| **Continuation** | Lines following a comment or log that extend its content until the next JAW construct |
+| **Continuation** | Lines following a comment, log, or note that extend its content until the next JAW construct |
 | **Chained Conditional** | Multiple conditions linked with `?` and `\|` on a single line |
 | **Complex Conditional** | A conditional with `[+]`/`[-]` blocks for multi-step branches |
 | **Destructured Iteration** | A for-each loop that unpacks multiple variables: `([A], [B]) in [1]` |

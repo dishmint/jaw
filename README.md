@@ -67,16 +67,27 @@ that spans multiple lines
 
 ### Logging
 
-Syntax: `[!] — <log-statement>`
+Syntax: `[•] — <log-statement>`
 
 Supports variable refs inline, log-level decorators (`#error`, `#warn`), and multi-line with indentation. An optional title ending in `:` on the first line is italicized.
 
 ```
-[!] — simple log
-[!] — #error something went wrong with [V]
-[!] — Title:
+[•] — simple log
+[•] — #error something went wrong with [V]
+[•] — Title:
 	multi-line log content
 	[V]@[P] added to [R]
+```
+
+### Notes
+
+Syntax: `[!] — <important-note>`
+
+Important notes are rendered in red and bold to draw attention. Same structural features as logs (multi-line continuation, decorators, optional title).
+
+```
+[!] — review this before shipping
+[!] — TODO: handle the empty [V] case
 ```
 
 ### Returns

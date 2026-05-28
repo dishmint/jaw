@@ -55,6 +55,7 @@ pub enum BlockItem {
     Parallel(Parallel),
     Comment(Comment),
     Log(Log),
+    Note(Note),
     Return(Return),
 }
 
@@ -125,6 +126,12 @@ pub struct Return {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Log {
+    pub text: String,
+    pub span: Span,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct Note {
     pub text: String,
     pub span: Span,
 }

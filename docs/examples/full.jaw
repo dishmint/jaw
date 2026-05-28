@@ -13,11 +13,11 @@ based on a configurable threshold
 	[>] [X] * 2
 
 /skip [X]: a number
-	[!] — #warn skipping [X] at threshold
+	[•] — #warn skipping [X] at threshold
 	[>] 0
 
 /flag [X]: a number
-	[!] — FlagDetail:
+	[•] — FlagDetail:
 		value [X] is below threshold [T]
 		flagged for review
 	[>] -1
@@ -56,5 +56,5 @@ based on a configurable threshold
 	[^] process in parallel with different thresholds
 
 	[1] — [M]: /merge[ [R1], [R2] ]
-	[!] — final result: [M]
+	[•] — final result: [M]
 	[>] [M]

@@ -26,7 +26,7 @@ If the user didn't specify, ask. Supported comment styles (matching `jaw-cli`'s 
 Before writing anything, draft the JAW algorithm mentally. Follow the rules from `.claude/skills/jaw-author/SKILL.md`:
 
 - Em dash `—` (U+2014), `/Title` for function refs, `[V]` for variable refs, `#name` for decorators.
-- Pick the right markers: `[N] —` step, `[~] —` loop, `[+]`/`[-]` complex conditional branches, `[!] —` log, `[>]` return, `[V] —` top-level variable, `[V]:` inline assign.
+- Pick the right markers: `[N] —` step, `[~] —` loop, `[+]`/`[-]` complex conditional branches, `[•] —` log, `[!] —` important note, `[>]` return, `[V] —` top-level variable, `[V]:` inline assign.
 - Function names are title case (`/BinarySearch`, not `/binary_search`).
 - **Conditionals with `?` require function calls**, per the grammar: `CODE ? FUNCTION_CALL | FUNCTION_CALL`. Don't write `[X] ? returnY | doZ` — either use real function refs (`? /Found | /Continue`) and define them, or describe the conditional in plain step text (`return [Y] if [X]`), or use the complex `[+]`/`[-]` form.
 
@@ -40,7 +40,8 @@ Same as `.claude/skills/jaw-translate/SKILL.md` Mode 1:
 - `[~] — condition` → while loop
 - `[+] —` / `[-] —` complex conditional → if/else
 - `[N] — [A] > [B] ? /DoX | /DoY` chained conditional → if/else **dispatching to the named functions**
-- `[!] —` → log/print
+- `[•] —` → log/print
+- `[!] —` → emit as prominent comment (`// NOTE:`, `# IMPORTANT:`)
 - `[>] expr` → return
 - `[R] << x` → append `x` to collection
 - `[V]@[P]` → indexed access
@@ -57,7 +58,8 @@ Wrap the output in one fenced code block for the target language. Place JAW line
 - **Steps** (`[N] — ...`) → comment above the line(s) implementing that step. If a step is one line of code, the comment goes directly above. If it's several, the comment goes above the first.
 - **Inline assigns** (`[X]: desc = val`) → comment above the corresponding variable assignment.
 - **Loops, conditionals** (`[~] —`, `[+]`, `[-]`) → comment above the `while`/`for`/`if`/`else` line.
-- **Logs and returns** (`[!] —`, `[>]`) → comment above the print/return line.
+- **Logs and returns** (`[•] —`, `[>]`) → comment above the print/return line.
+- **Notes** (`[!] —`) → comment above the affected code, ideally prefixed with `NOTE:` or `IMPORTANT:`.
 - **`[^]` code comments** and **`[*]` general comments** → keep as-is in comment form; multi-line ones can use block comment syntax in C-style languages.
 
 ### Example shape (Python target)

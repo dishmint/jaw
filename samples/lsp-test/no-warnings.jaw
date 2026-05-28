@@ -12,9 +12,9 @@
 	[>] [V]
 
 /Handle [X]: a number
-	[!] — handling [X]
+	[•] — handling [X]
 	[>] [X] * 2
 
 /Skip [X]: a number
-	[!] — #warn skipping [X]
+	[•] — #warn skipping [X]
 	[>] 0

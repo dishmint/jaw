@@ -68,6 +68,7 @@ When in doubt, read the matching example file rather than improvising:
 | Loops and destructured iteration | `docs/examples/loops.jaw` |
 | Decorators | `docs/examples/decorators.jaw` |
 | Logging | `docs/examples/logging.jaw` |
+| Notes (important) | `docs/examples/notes.jaw` |
 | Returns | `docs/examples/returns.jaw` |
 | End-to-end algorithm (Zip + sum) | `docs/examples/example-func.jaw` |
 | Larger reference | `samples/full.jaw` |

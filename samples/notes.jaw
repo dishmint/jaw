@@ -1,0 +1,26 @@
+[V] — a vector
+[X] — some value
+[T] — a threshold
+
+[!] — remember to validate [V] before shipping
+[^] plain note
+
+[!] — current threshold [T] is hard-coded
+[^] note with a variable ref
+
+[!] — /Process must run before /Aggregate
+[^] note with a function ref
+
+[!] — see step [3] for context
+[^] note with a step ref
+
+[!] — #todo handle empty [V] case at threshold [T]
+[^] note with a decorator and variable refs
+
+[!] — BlockerDetail:
+	[1] — owner: /Process
+	[2] — affected: [X]
+[^] note title form, with continuation lines
+
+[!] — element [V]@[X] should never be negative
+[^] note with an array-access expression

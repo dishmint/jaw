@@ -50,7 +50,7 @@
       "name": "variable.other.jaw"
     },
     "comment-function-reference": {
-      "match": "/\\w+",
+      "match": "(?<![\\w/])/\\w+",
       "name": "entity.name.function.jaw"
     },
     "log": {
@@ -293,7 +293,7 @@
       }
     },
     "function-reference": {
-      "match": "/\\w+",
+      "match": "(?<![\\w/])/\\w+",
       "name": "entity.name.function.jaw"
     },
     "conditional-operators": {

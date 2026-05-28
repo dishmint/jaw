@@ -342,12 +342,23 @@ impl Lexer {
     }
 
     fn is_function_start(&self) -> bool {
-        // '/' followed by an identifier character
-        if self.pos + 1 < self.source.len() {
-            is_ident_start(self.source[self.pos + 1])
-        } else {
-            false
+        // '/' followed by an identifier character, and not preceded by a word
+        // character or another '/' — so URLs (`https://x/y`), mime types
+        // (`application/json`), and paths (`/usr/local/bin`) don't get
+        // misread as function references.
+        if self.pos + 1 >= self.source.len() {
+            return false;
         }
+        if !is_ident_start(self.source[self.pos + 1]) {
+            return false;
+        }
+        if self.pos > 0 {
+            let prev = self.source[self.pos - 1];
+            if is_ident_char(prev) || prev == '/' {
+                return false;
+            }
+        }
+        true
     }
 
     fn current(&self) -> char {
@@ -480,6 +491,51 @@ mod tests {
         let tokens = lex("[!] — done processing");
         assert_eq!(tokens[1], TokenKind::Bang);
         assert_eq!(tokens[3], TokenKind::EmDash);
+    }
+
+    #[test]
+    fn test_slash_after_word_is_not_function() {
+        // Mime types like `application/json` must not tokenize `/json`
+        // as a function reference.
+        let tokens = lex("[*] — uses application/json for the body");
+        assert!(
+            !tokens.contains(&TokenKind::Slash),
+            "slash inside `application/json` should not be a function start, got: {:?}",
+            tokens
+        );
+    }
+
+    #[test]
+    fn test_slash_in_url_is_not_function() {
+        // URLs like `https://example.com/api/v1` must not produce
+        // function-start slashes.
+        let tokens = lex("[*] — see https://example.com/api/v1 for details");
+        assert!(
+            !tokens.contains(&TokenKind::Slash),
+            "no slash in a URL should be a function start, got: {:?}",
+            tokens
+        );
+    }
+
+    #[test]
+    fn test_slash_in_path_is_not_function() {
+        // Absolute-style paths after the first segment must not produce
+        // function-start slashes for the inner separators.
+        let tokens = lex("[*] — install to /usr/local/bin/jaw");
+        let slash_count = tokens.iter().filter(|t| **t == TokenKind::Slash).count();
+        assert_eq!(
+            slash_count, 1,
+            "only the leading `/usr` should look like a function start, got: {:?}",
+            tokens
+        );
+    }
+
+    #[test]
+    fn test_function_after_text_token() {
+        // A real function call after a space must still tokenize as Slash + ident.
+        let tokens = lex("[1] — call /Process");
+        assert!(tokens.contains(&TokenKind::Slash));
+        assert!(tokens.contains(&TokenKind::Identifier("Process".into())));
     }
 
     #[test]

@@ -218,45 +218,52 @@ impl Parser {
     fn parse_function_args(&mut self) -> Vec<InlineAssign> {
         let mut args = Vec::new();
 
-        // Args can be on the same line as /name or on the next line
-        // They look like: [A]: description, [B]: description = value
-        while matches!(self.peek_kind(), Some(TokenKind::LBracket)) {
-            if let Some(arg) = self.parse_inline_assign_arg() {
-                args.push(arg);
+        // Args may be on the same line as /name or spread across the
+        // following lines. They look like: [A]: description, [B]: ... = value
+        // and can be either comma-separated on one line or one-per-line.
+        // The function body is indented deeper than the signature, so a line
+        // at the function's base indent that is another `[ID]: ...` is an
+        // argument; anything else ends the signature.
+        let base_indent = self.current_indent_level();
+
+        loop {
+            // Comma-separated args on the current line.
+            while matches!(self.peek_kind(), Some(TokenKind::LBracket)) && self.is_inline_assignment()
+            {
+                if let Some(arg) = self.parse_inline_assign_arg() {
+                    args.push(arg);
+                }
+                if matches!(self.peek_kind(), Some(TokenKind::Comma)) {
+                    self.advance();
+                } else {
+                    break;
+                }
             }
-            // Consume comma separator
-            if matches!(self.peek_kind(), Some(TokenKind::Comma)) {
-                self.advance();
-            } else {
+
+            // Peek the next line: continue only if it is another argument
+            // line at the base indent. Otherwise restore and stop so the
+            // body (or whatever follows) is parsed normally.
+            if !self.at_newline() {
                 break;
             }
-        }
-
-        // Check next line for args if none found and we're at a newline
-        if args.is_empty() && self.at_newline() {
             let saved = self.pos;
             self.skip_newlines();
-
-            // Check if next line starts with indent + [
-            if matches!(self.peek_kind(), Some(TokenKind::Indent(_))) {
+            // Consume the leading indent token only when it matches the
+            // signature's indent (for indented functions); a deeper indent
+            // means we've reached the body.
+            if matches!(self.peek_kind(), Some(TokenKind::Indent(_)))
+                && self.current_indent_level() == base_indent
+            {
                 self.advance();
             }
-
-            if matches!(self.peek_kind(), Some(TokenKind::LBracket)) && self.is_inline_assignment() {
-                while matches!(self.peek_kind(), Some(TokenKind::LBracket)) {
-                    if let Some(arg) = self.parse_inline_assign_arg() {
-                        args.push(arg);
-                    }
-                    if matches!(self.peek_kind(), Some(TokenKind::Comma)) {
-                        self.advance();
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                // Not args, restore position
-                self.pos = saved;
+            if self.current_indent_level() == base_indent
+                && matches!(self.peek_kind(), Some(TokenKind::LBracket))
+                && self.is_inline_assignment()
+            {
+                continue;
             }
+            self.pos = saved;
+            break;
         }
 
         args
@@ -1197,6 +1204,46 @@ mod tests {
                 );
                 assert_eq!(f.args[1].name, "Y");
                 assert_eq!(f.args[1].description, "name");
+            }
+            _ => panic!("expected function"),
+        }
+    }
+
+    #[test]
+    fn test_parse_function_multiline_args() {
+        // Regression: args declared one-per-line (newline-separated, no
+        // commas) used to stop after the first arg, so hover/goto only saw
+        // a single parameter. All declared args should be captured.
+        let (ast, _) = parse("/Add\n[A]: first\n[B]: second\n[C]: third\n");
+        match &ast.items[0] {
+            TopLevel::Function(f) => {
+                let names: Vec<&str> = f.args.iter().map(|a| a.name.as_str()).collect();
+                assert_eq!(names, ["A", "B", "C"]);
+                assert_eq!(f.args[2].description, "third");
+            }
+            _ => panic!("expected function"),
+        }
+    }
+
+    #[test]
+    fn test_parse_function_multiline_args_with_body() {
+        // Regression (the `/Simulate` case from the genetic-algorithm
+        // sample): multi-line args followed by an indented body dropped
+        // every arg after the first. The body is indented deeper than the
+        // signature and must not swallow the trailing arguments.
+        let (ast, _) = parse(
+            "/Simulate\n[G]: the population generation\n[E]: the environment\n[T]: simulation steps\n\t[1] — [SE]: seeded environment = [E]\n\t[>] [SE]\n",
+        );
+        match &ast.items[0] {
+            TopLevel::Function(f) => {
+                let names: Vec<&str> = f.args.iter().map(|a| a.name.as_str()).collect();
+                assert_eq!(names, ["G", "E", "T"], "all three args should be parsed");
+                assert_eq!(f.args[0].description, "the population generation");
+                assert_eq!(f.args[2].description, "simulation steps");
+                assert!(
+                    !f.body.items.is_empty(),
+                    "indented body should still be parsed"
+                );
             }
             _ => panic!("expected function"),
         }

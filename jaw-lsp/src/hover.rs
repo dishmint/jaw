@@ -83,3 +83,24 @@ fn hover_response(content: &str, span: &Span, source: &str) -> Value {
         }
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jaw_parse::parse;
+
+    #[test]
+    fn function_hover_lists_all_multiline_args() {
+        // Regression: hovering a function with one-arg-per-line declarations
+        // (like `/Simulate` in the genetic-algorithm sample) used to show
+        // only the first argument's description.
+        let source = "/Simulate\n[G]: the population generation\n[E]: the environment\n[T]: simulation steps\n\t[>] [G]\n";
+        let (ast, _) = parse(source);
+        let offset = source.find("Simulate").unwrap();
+        let result = hover_at(&ast, source, offset).expect("expected hover on /Simulate");
+        let value = result["contents"]["value"].as_str().unwrap();
+        assert!(value.contains("[G]: the population generation"), "missing G: {value}");
+        assert!(value.contains("[E]: the environment"), "missing E: {value}");
+        assert!(value.contains("[T]: simulation steps"), "missing T: {value}");
+    }
+}

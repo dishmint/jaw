@@ -57,7 +57,7 @@
     "log": {
       "begin": "^(\\s*)(\\[•\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
       "beginCaptures": {
-        "2": { "name": "keyword.control.log.jaw" },
+        "2": { "name": "keyword.other.log.jaw" },
         "3": { "name": "punctuation.separator.jaw" },
         "4": { "name": "markup.italic.log-title.jaw" },
         "5": { "name": "entity.other.attribute-name.decorator.jaw" },

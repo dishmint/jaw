@@ -57,7 +57,7 @@
     "log": {
       "begin": "^(\\s*)(\\[•\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
       "beginCaptures": {
-        "2": { "name": "keyword.other.log.jaw" },
+        "2": { "name": "keyword.control.log.jaw" },
         "3": { "name": "punctuation.separator.jaw" },
         "4": { "name": "markup.italic.log-title.jaw" },
         "5": { "name": "entity.other.attribute-name.decorator.jaw" },
@@ -86,10 +86,10 @@
       "beginCaptures": {
         "2": { "name": "keyword.other.note.jaw" },
         "3": { "name": "punctuation.separator.jaw" },
-        "4": { "name": "markup.bold.note-title.jaw" },
+        "4": { "name": "keyword.other.note.jaw markup.bold.note-title.jaw" },
         "5": { "name": "entity.other.attribute-name.decorator.jaw" },
         "6": {
-          "name": "markup.bold.note.jaw",
+          "name": "keyword.other.note.jaw markup.bold.note.jaw",
           "patterns": [
             { "include": "#function-reference" },
             { "include": "#variable-reference" },
@@ -99,7 +99,7 @@
         }
       },
       "end": "(?=^\\s*(?:`{3,}|~{3,}))|(?=^(?!\\s*$)(?!\\1\\s+\\S))",
-      "contentName": "markup.bold.note.jaw",
+      "contentName": "keyword.other.note.jaw markup.bold.note.jaw",
       "patterns": [
         { "include": "#decorator" },
         { "include": "#function-reference" },

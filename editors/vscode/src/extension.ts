@@ -13,8 +13,11 @@ const JAW_BOLD_SCOPES = [
   { scope: "constant.numeric.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "punctuation.definition.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "markup.italic.log-title.jaw", settings: { fontStyle: "italic" } },
-  { scope: "markup.bold.note.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
-  { scope: "markup.bold.note-title.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
+  // Note body/title carry `keyword.other.note.jaw` in the grammar too, so the
+  // foreground falls through to the marker's theme color — these rules only add
+  // the bold weight.
+  { scope: "markup.bold.note.jaw", settings: { fontStyle: "bold" } },
+  { scope: "markup.bold.note-title.jaw", settings: { fontStyle: "bold" } },
 ];
 
 async function ensureBoldStyles() {

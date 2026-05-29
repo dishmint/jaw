@@ -218,7 +218,6 @@
         },
         "4": { "name": "keyword.operator.jaw" },
         "5": {
-          "name": "constant.other.value.jaw",
           "patterns": [
             { "include": "#function-reference" },
             { "include": "#variable-reference" },
@@ -258,7 +257,6 @@
         },
         "4": { "name": "keyword.operator.jaw" },
         "5": {
-          "name": "constant.other.value.jaw",
           "patterns": [
             { "include": "#function-reference" },
             { "include": "#variable-reference" },
@@ -348,7 +346,7 @@
       }
     },
     "number-literal": {
-      "match": "-?\\d+(\\.\\d+)?",
+      "match": "(?<![\\w.])-?\\d+(\\.\\d+)?(?![\\w.])",
       "name": "constant.numeric.jaw"
     }
   }

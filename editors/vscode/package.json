@@ -49,6 +49,12 @@
         }
       }
     ],
+    "snippets": [
+      {
+        "language": "jaw",
+        "path": "./snippets/jaw.json"
+      }
+    ],
     "configuration": {
       "title": "JAW",
       "properties": {

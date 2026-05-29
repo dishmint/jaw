@@ -5,6 +5,7 @@
   "patterns": [
     { "include": "#code-comment" },
     { "include": "#general-comment" },
+    { "include": "#note" },
     { "include": "#log" },
     { "include": "#return" },
     { "include": "#loop" },
@@ -27,7 +28,7 @@
       "beginCaptures": {
         "2": { "name": "comment.line.caret.jaw" }
       },
-      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
+      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[•\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
       "patterns": [
         { "include": "#comment-variable-reference" },
         { "include": "#comment-function-reference" }
@@ -39,7 +40,7 @@
       "beginCaptures": {
         "2": { "name": "comment.line.asterisk.jaw" }
       },
-      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
+      "end": "(?=^\\s*(?:\\[\\d+\\]|\\[\\^\\]|\\[\\*\\]|\\[!\\]|\\[•\\]|\\[>\\]|\\[~\\]|\\[&\\]|\\[\\+\\]|\\[-\\]|\\[[A-Za-z][A-Za-z0-9_]*\\]\\s*[—:]|/|`{3,}|~{3,}))",
       "patterns": [
         { "include": "#comment-variable-reference" },
         { "include": "#comment-function-reference" }
@@ -54,7 +55,7 @@
       "name": "entity.name.function.jaw"
     },
     "log": {
-      "begin": "^(\\s*)(\\[!\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
+      "begin": "^(\\s*)(\\[•\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
       "beginCaptures": {
         "2": { "name": "keyword.other.log.jaw" },
         "3": { "name": "punctuation.separator.jaw" },
@@ -72,6 +73,33 @@
       },
       "end": "(?=^\\s*(?:`{3,}|~{3,}))|(?=^(?!\\s*$)(?!\\1\\s+\\S))",
       "contentName": "string.unquoted.log.jaw",
+      "patterns": [
+        { "include": "#decorator" },
+        { "include": "#function-reference" },
+        { "include": "#variable-reference" },
+        { "include": "#access-operator" },
+        { "include": "#step-reference" }
+      ]
+    },
+    "note": {
+      "begin": "^(\\s*)(\\[!\\])(\\s*—\\s*)(?:(\\S.*:)\\s*$|(#\\w+(?::\\S+)?\\s+)?)?(.*)?",
+      "beginCaptures": {
+        "2": { "name": "keyword.other.note.jaw" },
+        "3": { "name": "punctuation.separator.jaw" },
+        "4": { "name": "keyword.other.note.jaw markup.bold.note-title.jaw" },
+        "5": { "name": "entity.other.attribute-name.decorator.jaw" },
+        "6": {
+          "name": "keyword.other.note.jaw markup.bold.note.jaw",
+          "patterns": [
+            { "include": "#function-reference" },
+            { "include": "#variable-reference" },
+            { "include": "#access-operator" },
+            { "include": "#step-reference" }
+          ]
+        }
+      },
+      "end": "(?=^\\s*(?:`{3,}|~{3,}))|(?=^(?!\\s*$)(?!\\1\\s+\\S))",
+      "contentName": "keyword.other.note.jaw markup.bold.note.jaw",
       "patterns": [
         { "include": "#decorator" },
         { "include": "#function-reference" },

@@ -1,0 +1,6 @@
+[----------------------------------------------------------------]
+[!] — review this before shipping
+[!] — #important do not call before /Init
+[!] — TODO:
+	handle the empty [V] case
+	verify [V]@[P] bounds checks

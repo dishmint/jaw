@@ -46,7 +46,7 @@ Three layers:
 
 ## Spec Reference
 
-All bracket markers: `[^]` code comment, `[*]` general comment, `[!]` log, `[>]` return, `[~]` loop, `[&]` parallel, `[+]` true branch, `[-]` false branch, `[N]` step, `[ID]` variable. Decorators: `#name` or `#name:value`. Array access: `[V]@[P]`. See `docs/glossary.md` for the full reference.
+All bracket markers: `[^]` code comment, `[*]` general comment, `[•]` log, `[!]` important note (red, bold), `[>]` return, `[~]` loop, `[&]` parallel, `[+]` true branch, `[-]` false branch, `[N]` step, `[ID]` variable. Decorators: `#name` or `#name:value`. Array access: `[V]@[P]`. See `docs/glossary.md` for the full reference.
 
 ## Testing the VS Code Extension
 

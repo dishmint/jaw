@@ -39,7 +39,8 @@ These rules are easy to get wrong and the parser/LSP will not all flag them:
 | `[~] —` | Loop. Body is an indented block. Iteration form: `[A] in [Coll]` or `([A], [B]) in [Pairs]` |
 | `[&]` | Parallel block. Body is indented. |
 | `[+] —` / `[-] —` | True/false branches of a complex (multi-step) conditional |
-| `[!] —` | Log / print |
+| `[•] —` | Log / print |
+| `[!] —` | Important note (rendered red and bold) |
 | `[>]` | Return |
 | `[^]` | Code comment tied to the preceding step |
 | `[*]` | Standalone general comment |
@@ -67,6 +68,7 @@ When in doubt, read the matching example file rather than improvising:
 | Loops and destructured iteration | `docs/examples/loops.jaw` |
 | Decorators | `docs/examples/decorators.jaw` |
 | Logging | `docs/examples/logging.jaw` |
+| Notes (important) | `docs/examples/notes.jaw` |
 | Returns | `docs/examples/returns.jaw` |
 | End-to-end algorithm (Zip + sum) | `docs/examples/example-func.jaw` |
 | Larger reference | `samples/full.jaw` |

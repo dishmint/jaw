@@ -1,13 +1,13 @@
 [*] Test: bare function refs inside conditionals
 
 /Grant [R]: a role
-	[!] — access granted for [R]
+	[•] — access granted for [R]
 
 /Deny [R]: a role
-	[!] — access denied for [R]
+	[•] — access denied for [R]
 
 /Limit [R]: a role
-	[!] — limited access for [R]
+	[•] — limited access for [R]
 
 /CheckAccess
 [R]: a role

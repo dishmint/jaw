@@ -54,6 +54,7 @@ pub enum TokenKind {
     Caret,
     Asterisk,
     Bang,
+    Bullet,
     GreaterThan,
     Plus,
     Minus,

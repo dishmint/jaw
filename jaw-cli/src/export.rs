@@ -98,9 +98,9 @@ mod tests {
 
     #[test]
     fn python_per_line() {
-        let src = "[V] — a vector\n[!] — done\n";
+        let src = "[V] — a vector\n[•] — done\n";
         let out = export(src, lookup("python").unwrap());
-        assert_eq!(out, "# [V] — a vector\n# [!] — done\n");
+        assert_eq!(out, "# [V] — a vector\n# [•] — done\n");
     }
 
     #[test]

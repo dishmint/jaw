@@ -156,9 +156,9 @@ impl Lexer {
 
         let inner = self.current();
 
-        // Check for special single-char markers: ~ & ^ * ! > + -
+        // Check for special single-char markers: ~ & ^ * ! • > + -
         match inner {
-            '~' | '&' | '^' | '*' | '!' | '>' | '+' | '-' => {
+            '~' | '&' | '^' | '*' | '!' | '•' | '>' | '+' | '-' => {
                 // Peek ahead to see if this is [marker]
                 let saved_pos = self.pos;
                 let saved_byte = self.byte_pos;
@@ -174,6 +174,7 @@ impl Lexer {
                         '^' => TokenKind::Caret,
                         '*' => TokenKind::Asterisk,
                         '!' => TokenKind::Bang,
+                        '•' => TokenKind::Bullet,
                         '>' => TokenKind::GreaterThan,
                         '+' => TokenKind::Plus,
                         '-' => TokenKind::Minus,
@@ -488,7 +489,14 @@ mod tests {
 
     #[test]
     fn test_log() {
-        let tokens = lex("[!] — done processing");
+        let tokens = lex("[•] — done processing");
+        assert_eq!(tokens[1], TokenKind::Bullet);
+        assert_eq!(tokens[3], TokenKind::EmDash);
+    }
+
+    #[test]
+    fn test_note() {
+        let tokens = lex("[!] — important reminder");
         assert_eq!(tokens[1], TokenKind::Bang);
         assert_eq!(tokens[3], TokenKind::EmDash);
     }

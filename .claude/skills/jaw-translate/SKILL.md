@@ -22,7 +22,8 @@ The user wants a working implementation in a target language, not comments.
    - `[~] — [X] in [Coll]` → `for x in coll:` (or the language equivalent)
    - `[~] — ([A], [B]) in [Pairs]` → destructured for-each
    - `[+] — ... / [-] — ...` → if / else
-   - `[!] — message` → log/print (use the project's logger if visible in context)
+   - `[•] — message` → log/print (use the project's logger if visible in context)
+   - `[!] — message` → important note; emit as a prominent comment (`// NOTE: ...`, `# IMPORTANT: ...`) or skip if comments are stripped
    - `[>] expr` → return
    - `[N] — [R] << x` → append `x` to `[R]` (collection mutation)
 4. **Reference worked example:** `docs/examples/example-func.jaw` is a Zip + sum algorithm. Use it to calibrate how decorators and inline assigns translate.
@@ -59,7 +60,8 @@ The user wants an existing function summarized as JAW comments/pseudocode.
    - `for x in coll:` → `[~] — [X] in [Coll]`
    - if/else with multi-line branches → `[+] —` / `[-] —`
    - return → `[>]`
-   - print/log → `[!] —`
+   - print/log → `[•] —`
+   - prominent comment like `// NOTE:`, `# IMPORTANT:` → `[!] —`
    - typed parameters → inline assigns: `/Func [A]: an integer, [B]: a list`
 4. Pick the right granularity. Each numbered `[N] —` step should correspond to one meaningful action, not every line of code. JAW is for the algorithm, not a literal transliteration.
 5. Self-check using the same checklist as `jaw-author` — em dashes, slashed function refs, title-case names, bracketed variables.

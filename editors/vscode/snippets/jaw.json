@@ -1,0 +1,42 @@
+{
+  "Log statement": {
+    "prefix": "log",
+    "body": ["[•] — $0"],
+    "description": "Log/print statement"
+  },
+  "Important note": {
+    "prefix": "note",
+    "body": ["[!] — $0"],
+    "description": "Important note (rendered red and bold)"
+  },
+  "Step": {
+    "prefix": "step",
+    "body": ["[${1:1}] — $0"],
+    "description": "Numbered algorithm step"
+  },
+  "Code comment": {
+    "prefix": "comment",
+    "body": ["[^] $0"],
+    "description": "Code comment tied to the preceding step"
+  },
+  "General comment": {
+    "prefix": "gcomment",
+    "body": ["[*] $0"],
+    "description": "Standalone general comment"
+  },
+  "Return": {
+    "prefix": "return",
+    "body": ["[>] $0"],
+    "description": "Return value"
+  },
+  "Loop": {
+    "prefix": "loop",
+    "body": ["[~] — $0"],
+    "description": "Loop block"
+  },
+  "Parallel": {
+    "prefix": "parallel",
+    "body": ["[&]", "\t$0"],
+    "description": "Parallel block"
+  }
+}

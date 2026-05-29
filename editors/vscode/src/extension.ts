@@ -13,7 +13,6 @@ const JAW_BOLD_SCOPES = [
   { scope: "constant.numeric.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "punctuation.definition.step.jaw", settings: { fontStyle: "bold" } },
   { scope: "markup.italic.log-title.jaw", settings: { fontStyle: "italic" } },
-  { scope: "keyword.other.note.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
   { scope: "markup.bold.note.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
   { scope: "markup.bold.note-title.jaw", settings: { fontStyle: "bold", foreground: "#D32F2F" } },
 ];
@@ -23,20 +22,17 @@ async function ensureBoldStyles() {
   const current = config.get<any>("tokenColorCustomizations") || {};
   const existingRules: any[] = current.textMateRules || [];
 
-  const existingScopes = new Set(existingRules.map((r: any) => r.scope));
-  const missing = JAW_BOLD_SCOPES.filter((r) => !existingScopes.has(r.scope));
+  const nonJawRules = existingRules.filter(
+    (r: any) => typeof r.scope !== "string" || !r.scope.endsWith(".jaw")
+  );
+  const reconciled = [...nonJawRules, ...JAW_BOLD_SCOPES];
 
-  if (missing.length > 0) {
-    const updated = {
-      ...current,
-      textMateRules: [...existingRules, ...missing],
-    };
-    await config.update(
-      "tokenColorCustomizations",
-      updated,
-      true
-    );
+  if (JSON.stringify(reconciled) === JSON.stringify(existingRules)) {
+    return;
   }
+
+  const updated = { ...current, textMateRules: reconciled };
+  await config.update("tokenColorCustomizations", updated, true);
 }
 
 export function activate(context: ExtensionContext) {

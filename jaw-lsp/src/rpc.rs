@@ -68,6 +68,12 @@ impl RpcNotification {
     }
 }
 
+/// Upper bound on a single message body. A well-behaved client never sends a
+/// JAW document anywhere near this large; the cap stops a malformed or hostile
+/// `Content-Length` (e.g. `Content-Length: 999999999999`) from driving an
+/// unbounded `vec![0u8; length]` allocation that would OOM the server.
+const MAX_CONTENT_LENGTH: usize = 64 * 1024 * 1024; // 64 MiB
+
 /// Read a JSON-RPC message from stdin (Content-Length framing).
 pub fn read_message(reader: &mut impl BufRead) -> io::Result<Option<RpcMessage>> {
     // Read headers
@@ -96,6 +102,13 @@ pub fn read_message(reader: &mut impl BufRead) -> io::Result<Option<RpcMessage>>
         None => return Err(io::Error::new(io::ErrorKind::InvalidData, "missing Content-Length")),
     };
 
+    if length > MAX_CONTENT_LENGTH {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("Content-Length {length} exceeds maximum {MAX_CONTENT_LENGTH}"),
+        ));
+    }
+
     // Read body
     let mut body = vec![0u8; length];
     reader.read_exact(&mut body)?;
@@ -113,4 +126,35 @@ pub fn write_message(writer: &mut impl Write, msg: &impl Serialize) -> io::Resul
 
     write!(writer, "Content-Length: {}\r\n\r\n{}", body.len(), body)?;
     writer.flush()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn rejects_oversized_content_length_without_allocating() {
+        // A hostile/malformed header must be refused, not turned into a
+        // multi-gigabyte `vec![0u8; length]`.
+        let msg = format!("Content-Length: {}\r\n\r\n", MAX_CONTENT_LENGTH + 1);
+        let mut reader = Cursor::new(msg.into_bytes());
+        let err = read_message(&mut reader).expect_err("oversized length should error");
+        assert_eq!(err.kind(), io::ErrorKind::InvalidData);
+    }
+
+    #[test]
+    fn reads_a_normal_message() {
+        let body = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
+        let msg = format!("Content-Length: {}\r\n\r\n{}", body.len(), body);
+        let mut reader = Cursor::new(msg.into_bytes());
+        let parsed = read_message(&mut reader).unwrap().expect("a message");
+        assert_eq!(parsed.method.as_deref(), Some("initialize"));
+    }
+
+    #[test]
+    fn eof_returns_none() {
+        let mut reader = Cursor::new(Vec::new());
+        assert!(read_message(&mut reader).unwrap().is_none());
+    }
 }

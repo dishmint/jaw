@@ -202,7 +202,14 @@ impl Lexer {
             let mut num_val: u32 = 0;
 
             while self.pos < self.source.len() && self.current().is_ascii_digit() {
-                num_val = num_val * 10 + self.current().to_digit(10).unwrap();
+                // Saturate rather than overflow: an out-of-range step/index
+                // literal (e.g. `[99999999999]`) must not panic the parser —
+                // and, via the LSP, crash the language server (which panics
+                // on `*` overflow in debug builds and silently wraps in
+                // release). u32::MAX is a fine clamp for a step number.
+                num_val = num_val
+                    .saturating_mul(10)
+                    .saturating_add(self.current().to_digit(10).unwrap());
                 self.advance();
             }
             let num_end = self.byte_pos;
@@ -259,7 +266,11 @@ impl Lexer {
         let mut val: u32 = 0;
 
         while self.pos < self.source.len() && self.current().is_ascii_digit() {
-            val = val * 10 + self.current().to_digit(10).unwrap();
+            // Saturating: a huge number literal must not panic/wrap. See the
+            // matching note in lex_bracket_expr.
+            val = val
+                .saturating_mul(10)
+                .saturating_add(self.current().to_digit(10).unwrap());
             self.advance();
         }
 
@@ -544,6 +555,20 @@ mod tests {
         let tokens = lex("[1] — call /Process");
         assert!(tokens.contains(&TokenKind::Slash));
         assert!(tokens.contains(&TokenKind::Identifier("Process".into())));
+    }
+
+    #[test]
+    fn test_oversized_number_does_not_panic() {
+        // Regression: a number literal wider than u32 (in a bracket step, a
+        // bare literal, or a bracketed index) used to overflow `num_val * 10`
+        // — a panic in debug builds, which aborted the LSP server. It must
+        // now saturate instead.
+        let _ = lex("[99999999999999999999] — x");
+        let _ = lex("[1] — 88888888888888888888888");
+        let tokens = lex("[123456789012345]");
+        assert_eq!(tokens[0], TokenKind::LBracket);
+        assert_eq!(tokens[1], TokenKind::Number(u32::MAX));
+        assert_eq!(tokens[2], TokenKind::RBracket);
     }
 
     #[test]

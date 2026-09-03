@@ -4,6 +4,7 @@ mod goto;
 mod hover;
 mod rpc;
 mod server;
+mod watchdog;
 
 use std::io::{self, BufReader};
 

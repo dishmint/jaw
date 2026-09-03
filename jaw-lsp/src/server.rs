@@ -54,6 +54,14 @@ impl Server {
 
         match method {
             "initialize" => {
+                // Monitor the client's process so an orphaned server exits
+                // instead of leaking. `processId` may be null per the spec.
+                if let Some(params) = msg.params.as_ref() {
+                    if let Some(pid) = params.get("processId").and_then(|v| v.as_i64()) {
+                        crate::watchdog::spawn(pid as i32);
+                    }
+                }
+
                 let result = json!({
                     "capabilities": {
                         "textDocumentSync": 1,
@@ -157,11 +165,28 @@ impl Server {
     fn update_document(&mut self, uri: &str, text: &str, writer: &mut impl Write) {
         self.documents.insert(uri.to_string(), text.to_string());
 
-        // Parse and publish diagnostics
-        let (ast, diags) = jaw_parse::parse(text);
+        // Parse and publish diagnostics. The parser runs over untrusted
+        // document content, so isolate it behind catch_unwind: a bug that
+        // panics on some input must not abort the whole server. If it did,
+        // the client would respawn us, reparse the same file, and re-panic —
+        // a restart/reparse loop that burns CPU on a document the user may
+        // not even have open. On panic we drop the stale AST and clear this
+        // document's diagnostics, then keep serving.
+        let parsed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| jaw_parse::parse(text)));
 
-        let params = publish_diagnostics_params(uri, text, &ast, &diags);
-        self.asts.insert(uri.to_string(), ast);
+        let params = match parsed {
+            Ok((ast, diags)) => {
+                let params = publish_diagnostics_params(uri, text, &ast, &diags);
+                self.asts.insert(uri.to_string(), ast);
+                params
+            }
+            Err(_) => {
+                eprintln!("jaw-lsp: parser panicked on {uri}; clearing diagnostics");
+                self.asts.remove(uri);
+                json!({ "uri": uri, "diagnostics": [] })
+            }
+        };
+
         let notification = RpcNotification::new("textDocument/publishDiagnostics", params);
         let _ = rpc::write_message(writer, &notification);
     }

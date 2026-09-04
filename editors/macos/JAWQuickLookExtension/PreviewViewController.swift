@@ -17,13 +17,13 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         scroll.autohidesScrollers = true
         scroll.borderType = .noBorder
         scroll.drawsBackground = true
-        scroll.backgroundColor = .textBackgroundColor
+        scroll.backgroundColor = JAWHighlighter.backgroundColor
 
         let text = NSTextView(frame: scroll.bounds)
         text.isEditable = false
         text.isSelectable = true
         text.drawsBackground = true
-        text.backgroundColor = .textBackgroundColor
+        text.backgroundColor = JAWHighlighter.backgroundColor
         text.textContainerInset = NSSize(width: 20, height: 16)
 
         // Code: no wrapping. The container grows with the longest line and the
@@ -48,6 +48,7 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         // decode rather than failing the preview outright.
         let source = String(data: data, encoding: .utf8)
             ?? String(decoding: data, as: UTF8.self)
-        textView.textStorage?.setAttributedString(JAWHighlighter.attributedString(for: source))
+        let dark = view.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+        textView.textStorage?.setAttributedString(JAWHighlighter.attributedString(for: source, dark: dark))
     }
 }

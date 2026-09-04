@@ -12,11 +12,16 @@ import AppKit
 // rendered, every later one came up blank. AppKit text has no helper
 // process, so it has nothing to lose.
 enum JAWHighlighter {
-    static func attributedString(for source: String) -> NSAttributedString {
+    /// Background the text should sit on — the theme's own, not the system's.
+    static var backgroundColor: NSColor { Palette.bg }
+
+    /// `dark` picks the palette's variant. Colours are dynamic either way; the
+    /// flag decides weights, which cannot be.
+    static func attributedString(for source: String, dark: Bool) -> NSAttributedString {
         let out = NSMutableAttributedString()
         let lines = source.components(separatedBy: "\n")
         for (i, line) in lines.enumerated() {
-            out.append(render(line: line))
+            out.append(render(line: line, dark: dark))
             if i < lines.count - 1 {
                 out.append(NSAttributedString(string: "\n", attributes: base))
             }
@@ -39,11 +44,11 @@ enum JAWHighlighter {
 
     // MARK: - Line rendering
 
-    private static func render(line: String) -> NSAttributedString {
+    private static func render(line: String, dark: Bool) -> NSAttributedString {
         let (indent, rest) = splitLeadingWhitespace(line)
         let lineKind = lineLevelKind(for: rest)
         let out = NSMutableAttributedString(string: indent, attributes: base)
-        tokenize(rest, lineKind: lineKind, into: out)
+        tokenize(rest, lineKind: lineKind, dark: dark, into: out)
         return out
     }
 
@@ -74,7 +79,7 @@ enum JAWHighlighter {
         return try! NSRegularExpression(pattern: pattern)
     }()
 
-    private static func tokenize(_ text: String, lineKind: LineKind?, into out: NSMutableAttributedString) {
+    private static func tokenize(_ text: String, lineKind: LineKind?, dark: Bool, into out: NSMutableAttributedString) {
         guard !text.isEmpty else { return }
         let ns = text as NSString
         let full = NSRange(location: 0, length: ns.length)
@@ -85,15 +90,15 @@ enum JAWHighlighter {
             let r = match.range
             if r.location > cursor {
                 let gap = ns.substring(with: NSRange(location: cursor, length: r.location - cursor))
-                out.append(NSAttributedString(string: gap, attributes: attributes(for: nil, in: lineKind)))
+                out.append(NSAttributedString(string: gap, attributes: attributes(for: nil, in: lineKind, dark: dark)))
             }
             let token = ns.substring(with: r)
-            out.append(NSAttributedString(string: token, attributes: attributes(for: kind(of: token, match: match), in: lineKind)))
+            out.append(NSAttributedString(string: token, attributes: attributes(for: kind(of: token, match: match), in: lineKind, dark: dark)))
             cursor = r.location + r.length
         }
 
         if cursor < ns.length {
-            out.append(NSAttributedString(string: ns.substring(from: cursor), attributes: attributes(for: nil, in: lineKind)))
+            out.append(NSAttributedString(string: ns.substring(from: cursor), attributes: attributes(for: nil, in: lineKind, dark: dark)))
         }
     }
 
@@ -119,34 +124,38 @@ enum JAWHighlighter {
 
     // MARK: - Attributes
 
-    // The same rules the CSS expressed: a token's own colour and weight, then
-    // the line kind overriding it the way `.ln.note .marker` did.
-    private static func attributes(for kind: Kind?, in lineKind: LineKind?) -> [NSAttributedString.Key: Any] {
+    // Future Earth (dishmint/theme-depot), by role: markers are keywords,
+    // function refs are functions, variables are types, steps and numbers are
+    // constants, decorators are attributes, the em dash is punctuation. The
+    // theme's rule decides the rest — dark mode tells things apart by colour,
+    // light mode by weight with as little colour as it can get away with — and
+    // the line kind overrides both, as the CSS's `.ln.note .marker` did.
+    private static func attributes(for kind: Kind?, in lineKind: LineKind?, dark: Bool) -> [NSAttributedString.Key: Any] {
         var color = Palette.fg
         var weight: NSFont.Weight = .regular
         var italic = false
 
         switch kind {
-        case .marker:   color = Palette.marker; weight = .semibold
-        case .step:     color = Palette.step;   weight = .semibold
-        case .variable: color = Palette.variable; weight = .semibold
-        case .fn:       color = Palette.fn
-        case .deco:     color = Palette.deco
-        case .sep:      color = Palette.sep
-        case .op:       color = Palette.op
-        case .num:      color = Palette.num
+        case .marker:   color = Palette.red;   weight = .semibold
+        case .step:     color = dark ? Palette.gold : Palette.fg; weight = .semibold
+        case .variable: color = Palette.blue;  weight = dark ? .regular : .bold
+        case .fn:       color = dark ? Palette.yellow : Palette.fg; weight = dark ? .regular : .bold
+        case .deco:     color = Palette.stone
+        case .sep:      color = Palette.fgDim
+        case .op:       color = Palette.fg
+        case .num:      color = dark ? Palette.gold : Palette.fg
         case nil:       break
         }
 
         switch lineKind {
         case .note:
-            color = Palette.note
+            color = Palette.redBright
             weight = .bold
         case .log:
-            if kind == .marker { color = Palette.log }
+            if kind == .marker { color = Palette.yellow }
         case .comment:
+            color = Palette.comment
             italic = true
-            if kind == nil || kind == .variable || kind == .marker { color = Palette.comment }
         case nil:
             break
         }
@@ -177,22 +186,20 @@ enum JAWHighlighter {
 
     // MARK: - Palette
 
-    // Tracks the VS Code extension where it can (the [•] log amber comes
-    // straight from extension.ts). Each colour resolves against the current
+    // Future Earth, light and dark, from dishmint/theme-depot
+    // (helix/future-earth/*.toml). Each colour resolves against the current
     // appearance, so the preview follows light and dark mode live.
     private enum Palette {
-        static let fg       = dynamic(light: 0x1f2328, dark: 0xd4d4d4)
-        static let marker   = dynamic(light: 0x6f42c1, dark: 0xc586c0)
-        static let step     = dynamic(light: 0x0969da, dark: 0x569cd6)
-        static let variable = dynamic(light: 0x0a7ea4, dark: 0x4ec9b0)
-        static let fn       = dynamic(light: 0x8250df, dark: 0xdcdcaa)
-        static let deco     = dynamic(light: 0x953800, dark: 0xce9178)
-        static let sep      = dynamic(light: 0x6e7781, dark: 0x808080)
-        static let op       = dynamic(light: 0xcf222e, dark: 0xd16969)
-        static let num      = dynamic(light: 0x0550ae, dark: 0xb5cea8)
-        static let log      = dynamic(light: 0xb45309, dark: 0xd7ba7d)
-        static let comment  = dynamic(light: 0x6e7781, dark: 0x6a9955)
-        static let note     = dynamic(light: 0xcf222e, dark: 0xf14c4c)
+        static let bg        = dynamic(light: 0xFBFFFE, dark: 0x1B1B1E)
+        static let fg        = dynamic(light: 0x1B1B1E, dark: 0xFBFFFE)
+        static let fgDim     = dynamic(light: 0x797470, dark: 0xB0ACA7)
+        static let comment   = dynamic(light: 0xB0B0AE, dark: 0x5C5C60)
+        static let red       = dynamic(light: 0xB54B4B, dark: 0xE06B6B)
+        static let redBright = dynamic(light: 0xD93636, dark: 0xFF4D4D)
+        static let yellow    = dynamic(light: 0xA8740D, dark: 0xFAB025)
+        static let gold      = dynamic(light: 0xA8740D, dark: 0xD4A04A)
+        static let blue      = dynamic(light: 0x2D5A6B, dark: 0x4F8BA0)
+        static let stone     = dynamic(light: 0x797470, dark: 0x9A9590)
 
         private static func dynamic(light: Int, dark: Int) -> NSColor {
             NSColor(name: nil) { appearance in

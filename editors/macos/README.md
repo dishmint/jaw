@@ -13,8 +13,8 @@ on modern macOS.
 | Piece | Role |
 | --- | --- |
 | `JAWQuickLook` (app) | Exports the `com.dishmint.jaw.source` UTI for the `.jaw` extension and hosts the preview extension. |
-| `JAWQuickLookExtension` (app extension) | A `QLPreviewingController` that renders the file as highlighted HTML in a `WKWebView`. |
-| `JAWHighlighter.swift` | Dependency-free, line-oriented JAW → HTML highlighter. Light + dark via `prefers-color-scheme`. |
+| `JAWQuickLookExtension` (app extension) | A `QLPreviewingController` that renders the file as highlighted text in an `NSTextView`. |
+| `JAWHighlighter.swift` | Dependency-free, line-oriented JAW → `NSAttributedString` highlighter. Light + dark via dynamic `NSColor`s. |
 
 Because the UTI conforms to `public.source-code`, even before the extension loads
 macOS will already preview `.jaw` files as plain text instead of "unknown file".
@@ -115,7 +115,10 @@ emits `<span>`s with CSS classes:
 
 Line-level classes (`note`, `log`, `comment`) carry the spec's emphasis — important
 notes render red + bold, comments muted/italic, the `[•]` log marker amber. The
-palette tracks the VS Code extension (`editors/vscode/src/extension.ts`).
+palette is Future Earth (`dishmint/theme-depot`), by role: markers are keywords,
+function refs are functions, variables are types, steps and numbers are constants,
+decorators are attributes. Dark mode tells tokens apart by colour, light mode by
+weight, as the theme does.
 
 It's intentionally approximate: a preview only needs to read well, and the
 highlighter never fails — anything it can't classify falls through as plain text.

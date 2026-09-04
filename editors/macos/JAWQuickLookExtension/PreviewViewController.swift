@@ -1,18 +1,44 @@
 import Cocoa
 import Quartz
-import WebKit
 
-// Renders a .jaw file as syntax-highlighted HTML inside a WKWebView. Quick Look
+// Renders a .jaw file as syntax-highlighted text in an NSTextView. Quick Look
 // instantiates this class (named in Info.plist) for each preview request.
-class PreviewViewController: NSViewController, QLPreviewingController, WKNavigationDelegate {
-    private var webView: WKWebView!
+//
+// Not a WKWebView: WebKit's content process does not survive Quick Look
+// reusing the extension process, so the first preview rendered and every one
+// after came up blank. An AppKit text view has no helper process to lose.
+class PreviewViewController: NSViewController, QLPreviewingController {
+    private var textView: NSTextView!
 
     override func loadView() {
-        let configuration = WKWebViewConfiguration()
-        let web = WKWebView(frame: .zero, configuration: configuration)
-        web.navigationDelegate = self
-        self.webView = web
-        self.view = web
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        scroll.hasVerticalScroller = true
+        scroll.hasHorizontalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.borderType = .noBorder
+        scroll.drawsBackground = true
+        scroll.backgroundColor = .textBackgroundColor
+
+        let text = NSTextView(frame: scroll.bounds)
+        text.isEditable = false
+        text.isSelectable = true
+        text.drawsBackground = true
+        text.backgroundColor = .textBackgroundColor
+        text.textContainerInset = NSSize(width: 20, height: 16)
+
+        // Code: no wrapping. The container grows with the longest line and the
+        // scroll view supplies the horizontal scroller.
+        text.isHorizontallyResizable = true
+        text.isVerticallyResizable = true
+        text.autoresizingMask = [.width]
+        text.minSize = .zero
+        text.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        text.textContainer?.widthTracksTextView = false
+        text.textContainer?.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+
+        scroll.documentView = text
+        self.textView = text
+        self.view = scroll
     }
 
     func preparePreviewOfFile(at url: URL) async throws {
@@ -21,24 +47,6 @@ class PreviewViewController: NSViewController, QLPreviewingController, WKNavigat
         // decode rather than failing the preview outright.
         let source = String(data: data, encoding: .utf8)
             ?? String(decoding: data, as: UTF8.self)
-        let html = JAWHighlighter.html(for: source)
-
-        // Start the load and return. Quick Look hosts this view live and paints
-        // it as it renders, so there is nothing to gain by waiting for
-        // `didFinish` — and the spinner stays up until this method returns, so
-        // waiting on a delegate callback that may never arrive in the
-        // extension's sandbox hangs the preview. Finishing the page matters
-        // for thumbnail capture, which this extension does not provide.
-        webView.loadHTMLString(html, baseURL: nil)
-    }
-
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        NSLog("JAWQuickLook: preview load failed: %@", error.localizedDescription)
-    }
-
-    func webView(_ webView: WKWebView,
-                 didFailProvisionalNavigation navigation: WKNavigation!,
-                 withError error: Error) {
-        NSLog("JAWQuickLook: preview load failed: %@", error.localizedDescription)
+        textView.textStorage?.setAttributedString(JAWHighlighter.attributedString(for: source))
     }
 }

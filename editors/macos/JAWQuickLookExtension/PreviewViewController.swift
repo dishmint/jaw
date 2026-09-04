@@ -42,6 +42,7 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     }
 
     func preparePreviewOfFile(at url: URL) async throws {
+        _ = view  // force loadView; Quick Look may call this before it ever asks for the view
         let data = try Data(contentsOf: url)
         // .jaw is UTF-8 by spec (em dashes, the [•] marker); fall back to a lossy
         // decode rather than failing the preview outright.

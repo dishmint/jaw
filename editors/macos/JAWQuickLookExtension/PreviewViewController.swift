@@ -6,7 +6,6 @@ import WebKit
 // instantiates this class (named in Info.plist) for each preview request.
 class PreviewViewController: NSViewController, QLPreviewingController, WKNavigationDelegate {
     private var webView: WKWebView!
-    private var loadContinuation: CheckedContinuation<Void, Error>?
 
     override func loadView() {
         let configuration = WKWebViewConfiguration()
@@ -24,28 +23,22 @@ class PreviewViewController: NSViewController, QLPreviewingController, WKNavigat
             ?? String(decoding: data, as: UTF8.self)
         let html = JAWHighlighter.html(for: source)
 
-        // Wait for the page to finish loading so Quick Look captures the rendered
-        // result, not a blank web view.
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            self.loadContinuation = continuation
-            self.webView.loadHTMLString(html, baseURL: nil)
-        }
-    }
-
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        loadContinuation?.resume()
-        loadContinuation = nil
+        // Start the load and return. Quick Look hosts this view live and paints
+        // it as it renders, so there is nothing to gain by waiting for
+        // `didFinish` — and the spinner stays up until this method returns, so
+        // waiting on a delegate callback that may never arrive in the
+        // extension's sandbox hangs the preview. Finishing the page matters
+        // for thumbnail capture, which this extension does not provide.
+        webView.loadHTMLString(html, baseURL: nil)
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        loadContinuation?.resume(throwing: error)
-        loadContinuation = nil
+        NSLog("JAWQuickLook: preview load failed: %@", error.localizedDescription)
     }
 
     func webView(_ webView: WKWebView,
                  didFailProvisionalNavigation navigation: WKNavigation!,
                  withError error: Error) {
-        loadContinuation?.resume(throwing: error)
-        loadContinuation = nil
+        NSLog("JAWQuickLook: preview load failed: %@", error.localizedDescription)
     }
 }

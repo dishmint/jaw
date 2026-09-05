@@ -13,7 +13,7 @@
 See the [installation docs](docs/installation/) for setup instructions:
 
 - [VS Code](docs/installation/vscode.md)
-- [macOS Quick Look](editors/macos/README.md) — Finder file recognition + syntax-highlighted preview for `.jaw` files
+- [macOS Quick Look](docs/installation/quicklook.md) — Finder file recognition + syntax-highlighted preview for `.jaw` files
 
 ## Syntax
 

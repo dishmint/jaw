@@ -54,6 +54,15 @@ targets, or set `DEVELOPMENT_TEAM` on both in the project's build settings. For 
 
 ## Install
 
+### From a release
+
+Every `v*` release ships `jaw-quicklook-macos.zip` (built by the
+`build-quicklook` job in `.github/workflows/release.yml`). See
+[docs/installation/quicklook.md](../../docs/installation/quicklook.md) for the
+download steps, including the Gatekeeper prompt the ad-hoc signature causes.
+
+### From source
+
 macOS discovers extensions from apps in a launchable location. Move the built app
 into `/Applications` (or `~/Applications`) and launch it once:
 
@@ -74,10 +83,12 @@ daemon:
 qlmanage -r && qlmanage -r cache
 ```
 
-> **Gatekeeper note:** an unsigned/un-notarized app downloaded from the internet
-> gets quarantined. If you distribute the built `.app`, the same notarization work
-> tracked in [#24](https://github.com/dishmint/jaw/issues/24) applies, or users can
-> clear the flag with `xattr -dr com.apple.quarantine "/Applications/JAW Quick Look.app"`.
+> **Gatekeeper note:** the release build is ad-hoc signed, not notarized, so a
+> downloaded copy is quarantined and blocked on first launch. Notarization is the
+> follow-up in [#67](https://github.com/dishmint/jaw/issues/67) (same work as
+> [#24](https://github.com/dishmint/jaw/issues/24) for `jaw-lsp`). Until then,
+> users open it by hand or clear the flag with
+> `xattr -dr com.apple.quarantine "/Applications/JAW Quick Look.app"`.
 
 ## Test
 

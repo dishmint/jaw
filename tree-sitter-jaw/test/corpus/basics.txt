@@ -1,0 +1,167 @@
+==================
+Variable declaration with decorators
+==================
+
+[V] — a vector #mutable #type:list
+
+---
+
+(source_file
+  (line
+    (variable_ref)
+    (em_dash)
+    (identifier)
+    (identifier)
+    (decorator
+      name: (identifier))
+    (decorator
+      name: (identifier)
+      value: (value))))
+
+==================
+Function definition and step with call
+==================
+
+/Classify #pure [X]: a number
+	[1] — [X] > [T] ? /Handle[ [X] ] | /Flag[ [X] ]
+
+---
+
+(source_file
+  (line
+    (function_ref)
+    (decorator
+      name: (identifier))
+    (variable_ref)
+    (identifier)
+    (identifier))
+  (line
+    (step_ref)
+    (em_dash)
+    (variable_ref)
+    (operator)
+    (variable_ref)
+    (operator)
+    (function_ref)
+    (variable_ref)
+    (operator)
+    (function_ref)
+    (variable_ref)))
+
+==================
+Comment with continuation lines
+==================
+
+[*] Process a vector
+filters, transforms
+[^] uses [V]
+[1] — next
+
+---
+
+(source_file
+  (comment
+    marker: (general_comment_marker)
+    (continuation))
+  (comment
+    marker: (code_comment_marker)
+    (variable_ref))
+  (line
+    (step_ref)
+    (em_dash)
+    (identifier)))
+
+==================
+Log with title and continuation
+==================
+
+[•] — FlagDetail:
+	value [X] is below [T]
+[•] — #warn skipping [X]
+
+---
+
+(source_file
+  (log
+    marker: (log_marker)
+    (em_dash)
+    (text)
+    (continuation))
+  (log
+    marker: (log_marker)
+    (em_dash)
+    (decorator
+      name: (identifier))
+    (text)
+    (variable_ref)))
+
+==================
+Note with function ref
+==================
+
+[!] — /Process must run before /Aggregate
+
+---
+
+(source_file
+  (note
+    marker: (note_marker)
+    (em_dash)
+    (function_ref)
+    (text)
+    (function_ref)))
+
+==================
+Loop, parallel, branches, return
+==================
+
+[~] — ([A], [B]) in [1]
+	[&]
+	[+] — [R] << [A]
+	[-] — pass
+	[>] [R]@[P] #validated
+
+---
+
+(source_file
+  (loop
+    marker: (loop_marker)
+    (em_dash)
+    (variable_ref)
+    (variable_ref)
+    (step_ref))
+  (line
+    (parallel_marker))
+  (line
+    (true_marker)
+    (em_dash)
+    (variable_ref)
+    (operator)
+    (variable_ref))
+  (line
+    (false_marker)
+    (em_dash)
+    (identifier))
+  (line
+    (return_marker)
+    (variable_ref)
+    (operator)
+    (variable_ref)
+    (decorator
+      name: (identifier))))
+
+==================
+`in` outside a loop is plain text
+==================
+
+[1] — value in range
+
+---
+
+(source_file
+  (line
+    (step_ref)
+    (em_dash)
+    (identifier)
+    (identifier)
+    (identifier)))

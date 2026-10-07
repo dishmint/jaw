@@ -31,7 +31,7 @@
 - Quick-fix code action to prepend `/`
 
 ### Future Considerations
-- tree-sitter grammar for Neovim/Helix/Zed highlighting
+- tree-sitter grammar for Neovim/Helix highlighting (Zed done: `tree-sitter-jaw/`, `editors/zed/`)
 - Linguist submission for GitHub ` ```jaw ` highlighting
 - VS Code color theme for shipping bold/italic styles without programmatic settings
 - Semantic tokens from LSP for richer highlighting

@@ -1,0 +1,16 @@
+id = "jaw"
+name = "JAW"
+description = "JAW (Just A Word) pseudocode: syntax highlighting and jaw-lsp."
+version = "0.1.0"
+schema_version = 1
+authors = ["dishmint"]
+repository = "https://github.com/dishmint/jaw"
+
+[grammars.jaw]
+repository = "https://github.com/dishmint/jaw"
+rev = "158e28e22d69d47ccc9dfada48a6ac3d0052cf36"
+path = "tree-sitter-jaw"
+
+[language_servers.jaw-lsp]
+name = "jaw-lsp"
+languages = ["JAW"]

@@ -8,7 +8,7 @@ repository = "https://github.com/dishmint/jaw"
 
 [grammars.jaw]
 repository = "https://github.com/dishmint/jaw"
-rev = "158e28e22d69d47ccc9dfada48a6ac3d0052cf36"
+rev = "9ed1579e311eac93e1b61bcfb99d88dadbc4f42e"
 path = "tree-sitter-jaw"
 
 [language_servers.jaw-lsp]

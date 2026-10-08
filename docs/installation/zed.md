@@ -41,6 +41,14 @@ To point at a local build:
 }
 ```
 
+## Troubleshooting
+
+| Error in **zed: open log** | Fix |
+|---|---|
+| `failed to retrieve the wasm32-wasip2 target libdir` | `rustup target add wasm32-wasip2` |
+| `'rustc': Bad CPU type in executable` | Default toolchain is Intel on an Apple Silicon Mac: `rustup toolchain install stable-aarch64-apple-darwin` and `rustup default stable-aarch64-apple-darwin` |
+| `failed to spawn command … jaw-lsp … Bad CPU type` | `jaw-lsp` was built for Intel. Rebuild with the arm64 toolchain (`cargo build --release -p jaw-lsp`) and reinstall it, then restart Zed |
+
 ## Developing the grammar
 
 Zed compiles the grammar from a git commit, not from your working tree. To try local grammar changes, temporarily point `extension.toml` at your clone:

@@ -3,3 +3,5 @@ build/
 DerivedData/
 *.xcuserstate
 xcuserdata/
+# Workspace stub Xcode writes when opening the .xcodeproj.
+project.xcworkspace/

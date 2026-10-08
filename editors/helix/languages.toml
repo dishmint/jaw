@@ -1,0 +1,18 @@
+# Add to ~/.config/helix/languages.toml (see docs/installation/helix.md).
+
+[[language]]
+name = "jaw"
+scope = "source.jaw"
+file-types = ["jaw"]
+injection-regex = "jaw"
+comment-token = "[^]"
+indent = { tab-width = 4, unit = "\t" }
+roots = []
+language-servers = ["jaw-lsp"]
+
+[language-server.jaw-lsp]
+command = "jaw-lsp"
+
+[[grammar]]
+name = "jaw"
+source = { git = "https://github.com/dishmint/jaw", rev = "720aa4e092429c876dd52c50898d0f7c382f29c5", subpath = "tree-sitter-jaw" }

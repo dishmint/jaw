@@ -35,7 +35,9 @@ Layers:
 
 - **editors/vscode** — VS Code extension with TextMate grammar (`jaw.tmLanguage.json`), markdown injection for ` ```jaw ` blocks, and LSP client that spawns `jaw-lsp`. Extension also programmatically sets bold/italic token styles on activation since `configurationDefaults` can't set `editor.tokenColorCustomizations`.
 
-- **tree-sitter-jaw** — Line-oriented tree-sitter grammar for highlighting (not structure). Regenerate with `tree-sitter generate --abi 14` and commit `src/`. `src/scanner.c` (hand-written, not generated) decides comment/log/note continuation lines, mirroring the TextMate begin/end rules. `queries/highlights.scm` is duplicated in `editors/zed/languages/jaw/` and must stay identical.
+- **tree-sitter-jaw** — Line-oriented tree-sitter grammar for highlighting (not structure). Regenerate with `tree-sitter generate --abi 14` and commit `src/`. `src/scanner.c` (hand-written, not generated) decides comment/log/note continuation lines, mirroring the TextMate begin/end rules. `queries/highlights.scm` is duplicated in `editors/zed/languages/jaw/` and must stay identical. `editors/helix/queries/jaw/highlights.scm` is a separate copy with Helix capture names and reversed pattern order (Helix: first match wins; Zed: last match wins) — keep it in sync by hand.
+
+- **editors/helix** — `languages.toml` snippet (grammar pinned by commit, same `rev` as Zed) and Helix highlight queries. Users copy both into `~/.config/helix/`.
 
 - **editors/zed** — Zed extension: grammar pinned by commit in `extension.toml`, Rust (wasm) shim that finds or downloads `jaw-lsp`. Not in the root Cargo workspace; check with `cargo build --target wasm32-wasip1` from `editors/zed/`.
 

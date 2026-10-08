@@ -27,6 +27,49 @@
           "named": true
         },
         {
+          "type": "function_ref",
+          "named": true
+        },
+        {
+          "type": "variable_ref",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "continuation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "decorator",
+          "named": true
+        },
+        {
+          "type": "em_dash",
+          "named": true
+        },
+        {
+          "type": "function_ref",
+          "named": true
+        },
+        {
+          "type": "operator",
+          "named": true
+        },
+        {
+          "type": "step_ref",
+          "named": true
+        },
+        {
+          "type": "text",
+          "named": true
+        },
+        {
           "type": "variable_ref",
           "named": true
         }
@@ -521,10 +564,6 @@
   },
   {
     "type": "code_comment_marker",
-    "named": true
-  },
-  {
-    "type": "continuation",
     "named": true
   },
   {

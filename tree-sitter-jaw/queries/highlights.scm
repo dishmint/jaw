@@ -2,19 +2,18 @@
 
 ; Comments: [^] code comment, [*] general comment
 (comment) @comment
-(comment (variable_ref) @variable)
 
 ; Logs: [•] marker, message as a string, `Title:` before continuation lines
 (log_marker) @keyword
 (log (text) @string)
-(log (continuation) @string)
+(log (continuation (text) @string))
 ((log (text) @emphasis . (continuation))
   (#match? @emphasis ":\\s*$"))
 
 ; Important notes: [!] marker and message share the marker's colour
 (note_marker) @keyword
 (note (text) @keyword)
-(note (continuation) @keyword)
+(note (continuation (text) @keyword))
 ((note (text) @emphasis.strong . (continuation))
   (#match? @emphasis.strong ":\\s*$"))
 

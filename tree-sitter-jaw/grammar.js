@@ -4,9 +4,12 @@
  *
  * Line-oriented: each line is a comment, log, note, loop header, or a generic
  * line of inline tokens. Nesting (function bodies, branches) is not modelled;
- * highlighting only needs the tokens. Comments, logs and notes swallow the
- * plain-text lines that follow them, matching the parser's continuation rule
- * (a following line that does not start with `[` or `/`).
+ * highlighting only needs the tokens.
+ *
+ * Comments, logs and notes take following lines as `continuation`s, decided by
+ * the external scanner (src/scanner.c) to match the VS Code TextMate grammar:
+ * a comment runs until a line starting with a JAW construct; a log or note runs
+ * while lines are indented deeper than its marker.
  */
 
 /// <reference types="tree-sitter-cli/dsl" />
@@ -23,6 +26,14 @@ module.exports = grammar({
 
   word: ($) => $.identifier,
 
+  externals: ($) => [
+    $.log_marker,
+    $.note_marker,
+    $._comment_newline,
+    $._message_newline,
+    $._error_sentinel,
+  ],
+
   rules: {
     source_file: ($) =>
       seq(repeat(seq(optional($._item), $._newline)), optional($._item)),
@@ -31,31 +42,41 @@ module.exports = grammar({
 
     _newline: (_) => /\n/,
 
-    // A following line of plain text, newline included.
-    continuation: (_) => token(prec(1, /\n[ \t]*[^\s\[\/][^\n]*/)),
-
     // [^] code comment / [*] general comment
     comment: ($) =>
       seq(
         field('marker', choice($.code_comment_marker, $.general_comment_marker)),
-        repeat(choice($.variable_ref, '[', $._comment_text)),
-        repeat($.continuation),
+        repeat($._comment_content),
+        repeat(alias($._comment_continuation, $.continuation)),
       ),
+
+    _comment_continuation: ($) =>
+      seq($._comment_newline, repeat($._comment_content)),
+
+    _comment_content: ($) =>
+      choice($.variable_ref, $.function_ref, '[', '/', $._comment_text),
 
     code_comment_marker: (_) => marker('^'),
     general_comment_marker: (_) => marker('*'),
-    _comment_text: (_) => /[^\[\n]+/,
+    _comment_text: (_) => /[^\[\/\n]+/,
 
     // [•] — log
     log: ($) =>
-      seq(field('marker', $.log_marker), repeat($._message), repeat($.continuation)),
+      seq(
+        field('marker', $.log_marker),
+        repeat($._message),
+        repeat(alias($._message_continuation, $.continuation)),
+      ),
 
     // [!] — important note
     note: ($) =>
-      seq(field('marker', $.note_marker), repeat($._message), repeat($.continuation)),
+      seq(
+        field('marker', $.note_marker),
+        repeat($._message),
+        repeat(alias($._message_continuation, $.continuation)),
+      ),
 
-    log_marker: (_) => marker('•'),
-    note_marker: (_) => marker('!'),
+    _message_continuation: ($) => seq($._message_newline, repeat($._message)),
 
     _message: ($) =>
       choice(

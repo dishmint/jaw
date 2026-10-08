@@ -35,7 +35,7 @@ Layers:
 
 - **editors/vscode** — VS Code extension with TextMate grammar (`jaw.tmLanguage.json`), markdown injection for ` ```jaw ` blocks, and LSP client that spawns `jaw-lsp`. Extension also programmatically sets bold/italic token styles on activation since `configurationDefaults` can't set `editor.tokenColorCustomizations`.
 
-- **tree-sitter-jaw** — Line-oriented tree-sitter grammar for highlighting (not structure). Regenerate with `tree-sitter generate --abi 14` and commit `src/`. `queries/highlights.scm` is duplicated in `editors/zed/languages/jaw/` and must stay identical.
+- **tree-sitter-jaw** — Line-oriented tree-sitter grammar for highlighting (not structure). Regenerate with `tree-sitter generate --abi 14` and commit `src/`. `src/scanner.c` (hand-written, not generated) decides comment/log/note continuation lines, mirroring the TextMate begin/end rules. `queries/highlights.scm` is duplicated in `editors/zed/languages/jaw/` and must stay identical.
 
 - **editors/zed** — Zed extension: grammar pinned by commit in `extension.toml`, Rust (wasm) shim that finds or downloads `jaw-lsp`. Not in the root Cargo workspace; check with `cargo build --target wasm32-wasip1` from `editors/zed/`.
 

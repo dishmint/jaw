@@ -86,7 +86,11 @@ Log with title and continuation
     marker: (log_marker)
     (em_dash)
     (text)
-    (continuation))
+    (continuation
+      (text)
+      (variable_ref)
+      (text)
+      (variable_ref)))
   (log
     marker: (log_marker)
     (em_dash)
@@ -192,3 +196,87 @@ Inline assignment descriptions
         (variable_ref)))
     (operator)
     (number)))
+
+==================
+Log continues while indented deeper than its marker
+==================
+
+	[•] — HandlePositive:
+		[V]@[P] added to [R]
+
+		/Process done
+	[1] — next
+
+---
+
+(source_file
+  (log
+    marker: (log_marker)
+    (em_dash)
+    (text)
+    (continuation
+      (variable_ref)
+      (operator)
+      (variable_ref)
+      (text)
+      (variable_ref))
+    (continuation)
+    (continuation
+      (function_ref)
+      (text)))
+  (line
+    (step_ref)
+    (em_dash)
+    (identifier)))
+
+==================
+Note continuation stops at the same indentation
+==================
+
+[!] — TODO:
+	handle the empty [V] case
+[!] — done
+
+---
+
+(source_file
+  (note
+    marker: (note_marker)
+    (em_dash)
+    (text)
+    (continuation
+      (text)
+      (variable_ref)
+      (text)))
+  (note
+    marker: (note_marker)
+    (em_dash)
+    (text)))
+
+==================
+Comment continues until a JAW construct
+==================
+
+[*] note that [V]@[P] is
+[V]@[P] stays in the comment, see /Sort
+
+and so does this
+[R]: ends it
+
+---
+
+(source_file
+  (comment
+    marker: (general_comment_marker)
+    (variable_ref)
+    (variable_ref)
+    (continuation
+      (variable_ref)
+      (variable_ref)
+      (function_ref))
+    (continuation)
+    (continuation))
+  (line
+    (inline_assign
+      (variable_ref)
+      (description))))

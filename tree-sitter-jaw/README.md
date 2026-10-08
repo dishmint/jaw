@@ -2,7 +2,10 @@
 
 Tree-sitter grammar for JAW. Used by the [Zed extension](../editors/zed/), and intended for Helix (#16) and Neovim (#15).
 
-The grammar is line-oriented and exists for highlighting: each line is a `comment`, `log`, `note`, `loop` header or generic `line` of tokens. It does not model function bodies or nesting — `jaw-parse` remains the source of truth for structure. Plain-text lines after a comment, log or note become `continuation` nodes of it.
+The grammar is line-oriented and exists for highlighting: each line is a `comment`, `log`, `note`, `loop` header or generic `line` of tokens. It does not model function bodies or nesting — `jaw-parse` remains the source of truth for structure. Lines after a comment, log or note become `continuation` nodes of it. The external scanner (`src/scanner.c`) decides this, using the same rules as the VS Code TextMate grammar:
+
+- `[^]` / `[*]` comment: continues until the next non-blank line starts with a JAW construct (`[N]`, a marker, `[ID]` followed by `—` or `:`, or `/`).
+- `[•]` log / `[!]` note: continues while the next non-blank line is indented deeper than the marker.
 
 ## Develop
 

@@ -83,6 +83,7 @@ module.exports = grammar({
 
     _inline: ($) =>
       choice(
+        $.inline_assign,
         $.parallel_marker,
         $.true_marker,
         $.false_marker,
@@ -105,6 +106,27 @@ module.exports = grammar({
         ';',
         $._misc,
       ),
+
+    // [X]: description = value — the description runs to `,`, `=` or end of line.
+    inline_assign: ($) =>
+      prec.right(1, seq($.variable_ref, ':', optional($.description))),
+
+    description: ($) =>
+      prec.right(
+        repeat1(
+          choice(
+            $.variable_ref,
+            $.step_ref,
+            $.function_ref,
+            alias('@', $.operator),
+            '[',
+            ']',
+            $._description_text,
+          ),
+        ),
+      ),
+
+    _description_text: (_) => /[^\s\[\],=#\/@\n][^\[\],=#\/@\n]*/,
 
     parallel_marker: (_) => marker('&'),
     true_marker: (_) => marker('+'),

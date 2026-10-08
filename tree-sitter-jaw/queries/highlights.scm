@@ -33,6 +33,9 @@
 (step_ref) @number
 (number) @number
 
+; Descriptions after `[X]:` (inner refs keep their own colours below)
+(description) @string
+
 ; Variables [V]
 (variable_ref) @variable
 
@@ -46,6 +49,8 @@
 (decorator value: (value) @string)
 
 (operator) @operator
+((operator) @keyword
+  (#match? @keyword "^[?|]$"))
 (em_dash) @punctuation.delimiter
 [":" "," ";" "."] @punctuation.delimiter
 ["[" "]" "(" ")"] @punctuation.bracket

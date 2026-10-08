@@ -60,6 +60,52 @@
     }
   },
   {
+    "type": "description",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "function_ref",
+          "named": true
+        },
+        {
+          "type": "operator",
+          "named": true
+        },
+        {
+          "type": "step_ref",
+          "named": true
+        },
+        {
+          "type": "variable_ref",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "inline_assign",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "description",
+          "named": true
+        },
+        {
+          "type": "variable_ref",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "line",
     "named": true,
     "fields": {},
@@ -85,6 +131,10 @@
         },
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "inline_assign",
           "named": true
         },
         {
@@ -209,6 +259,10 @@
         },
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "inline_assign",
           "named": true
         },
         {

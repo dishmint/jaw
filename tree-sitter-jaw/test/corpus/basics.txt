@@ -32,9 +32,9 @@ Function definition and step with call
     (function_ref)
     (decorator
       name: (identifier))
-    (variable_ref)
-    (identifier)
-    (identifier))
+    (inline_assign
+      (variable_ref)
+      (description)))
   (line
     (step_ref)
     (em_dash)
@@ -165,3 +165,30 @@ Loop, parallel, branches, return
     (identifier)
     (identifier)
     (identifier)))
+
+==================
+Inline assignment descriptions
+==================
+
+[V]: a list, [T]: a threshold
+	[2] — [P]: tracking position of [V] = 0
+
+---
+
+(source_file
+  (line
+    (inline_assign
+      (variable_ref)
+      (description))
+    (inline_assign
+      (variable_ref)
+      (description)))
+  (line
+    (step_ref)
+    (em_dash)
+    (inline_assign
+      (variable_ref)
+      (description
+        (variable_ref)))
+    (operator)
+    (number)))

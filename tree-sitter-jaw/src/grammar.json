@@ -431,6 +431,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "inline_assign"
+        },
+        {
+          "type": "SYMBOL",
           "name": "parallel_marker"
         },
         {
@@ -514,6 +518,84 @@
           "name": "_misc"
         }
       ]
+    },
+    "inline_assign": {
+      "type": "PREC_RIGHT",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "variable_ref"
+          },
+          {
+            "type": "STRING",
+            "value": ":"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "description"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "description": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "REPEAT1",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "variable_ref"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "step_ref"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "function_ref"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "@"
+              },
+              "named": true,
+              "value": "operator"
+            },
+            {
+              "type": "STRING",
+              "value": "["
+            },
+            {
+              "type": "STRING",
+              "value": "]"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_description_text"
+            }
+          ]
+        }
+      }
+    },
+    "_description_text": {
+      "type": "PATTERN",
+      "value": "[^\\s\\[\\],=#\\/@\\n][^\\[\\],=#\\/@\\n]*"
     },
     "parallel_marker": {
       "type": "TOKEN",

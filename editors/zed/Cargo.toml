@@ -1,0 +1,16 @@
+[package]
+name = "zed-jaw"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "MIT"
+
+[lib]
+path = "src/jaw.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"
+
+# Built to wasm by Zed, not part of the root workspace.
+[workspace]

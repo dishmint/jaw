@@ -7,3 +7,8 @@ editors/vscode/out/
 
 # OS
 .DS_Store
+
+# Zed extension
+editors/zed/target/
+editors/zed/grammars/
+editors/zed/extension.wasm

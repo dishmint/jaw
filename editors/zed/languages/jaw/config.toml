@@ -1,0 +1,12 @@
+name = "JAW"
+grammar = "jaw"
+path_suffixes = ["jaw"]
+line_comments = ["[^] "]
+tab_size = 4
+hard_tabs = true
+brackets = [
+  { start = "[", end = "]", close = true, newline = false },
+  { start = "(", end = ")", close = true, newline = false },
+]
+increase_indent_pattern = "^\\s*(\\[~\\]|\\[&\\]|/\\w+|\\[\\d+\\]\\s*—.*\\?\\s*$)"
+decrease_indent_pattern = "^\\s*\\[>\\]"

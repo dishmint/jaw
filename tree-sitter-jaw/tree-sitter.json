@@ -1,0 +1,28 @@
+{
+  "grammars": [
+    {
+      "name": "jaw",
+      "camelcase": "Jaw",
+      "scope": "source.jaw",
+      "path": ".",
+      "file-types": ["jaw"],
+      "highlights": "queries/highlights.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "JAW (Just A Word) grammar for tree-sitter",
+    "links": {
+      "repository": "https://github.com/dishmint/jaw"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false
+  }
+}
